@@ -1,34 +1,24 @@
 <template>
-  <table v-bind="extractTableProps()">
-    <oc-thead v-if="hasHeader">
-      <oc-tr class="oc-table-header-row">
-        <oc-th
-          v-for="(field, index) in fields"
-          :key="`oc-thead-${field.name}`"
-          v-bind="extractThProps(field, index)"
-          @click.native="$emit(constants.EVENT_THEAD_CLICKED, field)"
+  <div>
+    <div>
+      <div class="grouping-settings">
+        <div
+          v-if="groupingSettings.groupingAllowed && groupingSettings.showGroupingOptions"
+          class="oc-docs-width-small"
         >
-          <span
-            v-if="field.headerType === 'slot'"
-            :key="field.name + 'Header'"
-            class="oc-table-thead-content"
-          >
-            <slot :name="field.name + 'Header'" />
-          </span>
-          <span
-            v-else
-            :key="field.name + 'Header'"
-            class="oc-table-thead-content"
-            v-text="extractFieldTitle(field)"
+          <label class="oc-mx-s">Group By:</label>
+        </div>
+        <div
+          v-if="groupingSettings.groupingAllowed && groupingSettings.showGroupingOptions"
+          class="oc-docs-width-medium"
+        >
+          <oc-select
+            v-model="selected"
+            :options="['None', ...Object.keys(groupingSettings.groupingFunctions)]"
+            :clearable="false"
+            :searchable="false"
           />
-          <oc-button
-            v-if="field.sortable"
-            :aria-label="getSortLabel(field.name)"
-            class="oc-button-sort"
-            variant="passive"
-            appearance="raw"
-            @click.stop="$emit(constants.EVENT_THEAD_CLICKED, field)"
-          />
+<<<<<<< HEAD
         </oc-th>
       </oc-tr>
     </oc-thead>
@@ -51,29 +41,189 @@
         @dragleave.native.prevent.stop="dropRowStyling(item.id, true, $event)"
         @mouseleave="dropRowStyling(item.id, true, $event)"
         @dragover.native.prevent.stop
-      >
-        <oc-td
-          v-for="(field, tdIndex) in fields"
-          :key="'oc-tbody-td-' + cellKey(field, tdIndex, item)"
-          v-bind="extractTdProps(field, tdIndex)"
+=======
+        </div>
+      </div>
+      <br />
+    </div>
+    <table v-bind="extractTableProps()">
+      <oc-thead v-if="hasHeader">
+        <oc-tr class="oc-table-header-row">
+          <oc-th
+            v-for="(field, index) in fields"
+            :key="`oc-thead-${field.name}`"
+            v-bind="extractThProps(field, index)"
+            @click.native="clickedField(field)"
+          >
+            <span
+              v-if="field.headerType === 'slot'"
+              :key="field.name + 'Header'"
+              class="oc-table-thead-content"
+            >
+              <slot :name="field.name + 'Header'" />
+            </span>
+            <span
+              v-else
+              :key="field.name + 'Header'"
+              class="oc-table-thead-content"
+              v-text="extractFieldTitle(field)"
+            />
+            <oc-button
+              v-if="field.sortable"
+              :aria-label="getSortLabel(field.name)"
+              class="oc-button-sort"
+              variant="passive"
+              appearance="raw"
+              @click.stop="clickedField(field)"
+            />
+          </oc-th>
+        </oc-tr>
+      </oc-thead>
+      <oc-tbody v-if="selected === 'None' || !selected">
+        <oc-tr
+          v-for="(item, trIndex) in tableData"
+          :key="`oc-tbody-tr-${item[idKey] || trIndex}`"
+          :ref="`row-${trIndex}`"
+          v-bind="extractTbodyTrProps(item, trIndex)"
+          @click.native="$emit(constants.EVENT_TROW_CLICKED, item)"
+          @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
         >
-          <slot v-if="isFieldTypeSlot(field)" :name="field.name" :item="item" />
-          <template v-else-if="isFieldTypeCallback(field)">
-            {{ field.callback(item[field.name]) }}
-          </template>
-          <template v-else>{{ item[field.name] }}</template>
-        </oc-td>
-      </oc-tr>
-    </oc-tbody>
-    <tfoot v-if="$slots.footer" class="oc-table-footer">
-      <tr>
-        <td :colspan="footerColspan" class="oc-table-footer-cell">
-          <!-- @slot Footer of the table -->
-          <slot name="footer" />
-        </td>
-      </tr>
-    </tfoot>
-  </table>
+          <oc-td
+            v-for="(field, tdIndex) in fields"
+            :key="'oc-tbody-td-' + cellKey(field, tdIndex, item)"
+            v-bind="extractTdProps(field, tdIndex)"
+          >
+            <slot v-if="isFieldTypeSlot(field)" :name="field.name" :item="item" />
+            <template v-else-if="isFieldTypeCallback(field)">
+              {{ field.callback(item[field.name]) }}
+            </template>
+            <template v-else>{{ item[field.name] }}</template>
+          </oc-td>
+        </oc-tr>
+      </oc-tbody>
+
+      <!-- Collapsibles -->
+
+      <tbody
+        v-for="(item, index) in groupedItems"
+        v-else-if="groupingSettings.groupingAllowed && selected !== 'None'"
+        :key="`${item.name + index}`"
+>>>>>>> Advanced table options
+      >
+        <oc-tr
+          style="
+             {
+              height: rowHeight + 'px';
+            }
+          "
+          :class="['oc-tbody-tr', 'oc-tbody-tr-accordion']"
+          @click.native="toggle(item, index)"
+          ><oc-td style="colspan='2'"
+            ><oc-avatar
+              v-if="selected === 'owner'"
+              width="30"
+              style="
+                 {
+                  width: 30px;
+                  height: 30px;
+                }
+              "
+              user-name="item.name"
+              :src="item.data[0].owner[0].avatar"
+              accessible-label="item.name" /></oc-td
+          ><oc-td :colspan="4"> {{ item.name }} </oc-td
+          ><oc-td>
+            <span
+              class="oc-ml-xs oc-icon-l"
+              :style="[resultArray[index].open ? { display: 'none' } : {}]"
+            >
+              <oc-icon
+                name="expand_less"
+                class="oc-accordion-title-arrow-icon"
+                :class="{ rotate: resultArray[index].open }"
+                size="large"
+              />
+            </span>
+            <span
+              class="oc-ml-xs oc-icon-l"
+              :style="[resultArray[index].open ? {} : { display: 'none' }]"
+            >
+              <oc-icon
+                name="expand_more"
+                class="oc-accordion-title-arrow-icon"
+                :class="{ rotate: resultArray[index].open }"
+                size="large"
+              /> </span></oc-td
+        ></oc-tr>
+        <template v-if="resultArray[index].open">
+          <oc-tr
+            v-for="(item, trIndex) in item.data"
+            :key="`oc-tbody-tr-${item[idKey] || trIndex}`"
+            :ref="`row-${trIndex}`"
+            v-bind="extractTbodyTrProps(item, trIndex)"
+            @click.native="$emit(constants.EVENT_TROW_CLICKED, item)"
+            @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
+          >
+            <oc-td
+              v-for="(field, tdIndex) in fields"
+              :key="'oc-tbody-td-' + cellKey(field, tdIndex, item)"
+              v-bind="extractTdProps(field, tdIndex)"
+            >
+              <slot v-if="isFieldTypeSlot(field)" :name="field.name" :item="item" />
+              <template v-else-if="isFieldTypeCallback(field)">
+                {{ field.callback(item[field.name]) }}
+              </template>
+              <template v-else>{{ item[field.name] }}</template>
+            </oc-td>
+          </oc-tr>
+        </template>
+      </tbody>
+
+      <!-- Show more/show less footer for preview enabled -->
+      <tbody v-if="groupingSettings.previewTable">
+        <oc-tr
+          style="
+             {
+              height: rowHeight + 'px';
+            }
+          "
+          :class="['oc-tbody-tr', 'preview-settings']"
+          @click.native="previewEnabled = !previewEnabled"
+        >
+          <oc-td
+            v-if="previewEnabled"
+            key="showMore"
+            :colspan="6"
+            style="
+               {
+                text-align: center;
+              }
+            "
+            ><div class="preview-heading">Show more</div> </oc-td
+          ><oc-td
+            v-else
+            key="showLess"
+            :colspan="6"
+            style="
+               {
+                text-align: center;
+              }
+            "
+            ><div class="preview-heading">Show less</div>
+          </oc-td>
+        </oc-tr>
+      </tbody>
+
+      <tfoot v-if="$slots.footer" class="oc-table-footer">
+        <tr>
+          <td :colspan="footerColspan" class="oc-table-footer-cell">
+            <!-- @slot Footer of the table -->
+            <slot name="footer" />
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 </template>
 <script>
 import OcThead from "./_OcTableHeader"
@@ -82,8 +232,10 @@ import OcTr from "./_OcTableRow"
 import OcTh from "./_OcTableCellHead"
 import OcTd from "./_OcTableCellData"
 import OcButton from "../OcButton"
+import OcAvatar from "../avatars/OcAvatar.vue"
 import SortMixin from "./mixins/sort"
 import { getSizeClass } from "../../utils/sizeClasses"
+import OcSelect from "../OcSelect.vue"
 
 import {
   EVENT_THEAD_CLICKED,
@@ -108,9 +260,15 @@ export default {
     OcTh,
     OcTd,
     OcButton,
+    OcAvatar,
+    OcSelect,
   },
   mixins: [SortMixin],
   props: {
+    groupingSettings: {
+      type: Object,
+      required: false,
+    },
     /**
      * The data for the table. Each array item will be rendered as one table row. Each array item needs to have a
      * unique identifier. By default we expect this to be an `id` field. If your field has a different name, please
@@ -214,6 +372,13 @@ export default {
   },
   data() {
     return {
+      selected: this.groupingSettings.passedGroupingBy || this.groupingSettings.defaultGroupingBy,
+      accordionClosed: [],
+      previewEnabled: true,
+      previewData: [],
+      resultArray: [],
+      showMore: false,
+      groupingOrderAsc: this.groupingOrder(),
       constants: {
         EVENT_THEAD_CLICKED,
         EVENT_TROW_CLICKED,
@@ -224,6 +389,10 @@ export default {
   },
   computed: {
     tableData() {
+      if (this.groupingSettings.previewTable && this.selected === "None" && this.previewEnabled)
+        return this.sortedData
+          ? this.sortedData.slice(0, this.groupingSettings.previewAmount || 3)
+          : this.data.slice(0, this.groupingSettings.previewAmount || 3)
       return this.sortedData || this.data
     },
     tableClasses() {
@@ -243,8 +412,32 @@ export default {
     footerColspan() {
       return this.fields.length
     },
+    //my computed
+    groupedItems() {
+      let result = this.groupingFunction(
+        this.selected,
+        this.tableData,
+        this.groupingOrderAsc[this.selected]
+      )
+
+      if (this.groupingSettings.previewTable && this.previewEnabled) {
+        let previewCount = this.groupingSettings.previewAmount + 1
+
+        result.forEach(e => {
+          let eLength = e.data.length
+          if (eLength - previewCount >= 0) e.data = e.data.slice(0, previewCount - 1)
+          previewCount = previewCount - eLength
+        })
+
+        result = result.filter(e => e.data.length > 0)
+      }
+
+      this.resultArray = result
+      return result
+    },
   },
   methods: {
+<<<<<<< HEAD
     dragStart(file) {
       if (!this.dragDrop) return
       this.$emit(EVENT_FILE_DRAGGED, file)
@@ -265,6 +458,66 @@ export default {
       const className = "highlightedDropTarget"
       leaving ? classList.remove(className) : classList.add(className)
     },
+=======
+    //my methods
+    groupingOrder() {
+      let groupingOrder = {}
+      Object.keys(this.groupingSettings.groupingFunctions).forEach(
+        group => (groupingOrder[group] = true)
+      )
+      return groupingOrder
+    },
+    groupingFunction(col, data, asc) {
+      let result = {}
+
+      if (Object.keys(this.groupingSettings.groupingFunctions).includes(col)) {
+        data.forEach(row => {
+          result[this.groupingSettings.groupingFunctions[col](row)]
+            ? result[this.groupingSettings.groupingFunctions[col](row)].push(row)
+            : (result[this.groupingSettings.groupingFunctions[col](row)] = [row])
+        })
+        return this.produceGroups(Object.entries(result), asc, col)
+      }
+    },
+
+    produceGroups(arr, asc, col) {
+      let resultArray = []
+      for (const [key, value] of arr) {
+        let obj = {}
+        obj.name = key.toUpperCase()
+        obj.open = true
+        obj.data = value
+        resultArray.push(obj)
+      }
+      if (col === "creation")
+        return resultArray.sort((a, b) =>
+          Date.parse(a.data[0].sdate) > Date.parse(b.data[0].sdate) ? -1 : 1
+        )
+      if (asc) return resultArray.sort((a, b) => (a.name > b.name ? 1 : -1))
+      else return resultArray.sort((a, b) => (a.name > b.name ? -1 : 1))
+    },
+
+    toggle(item, index) {
+      this.resultArray[index].open = !this.resultArray[index].open
+    },
+    itemOpen(item, index) {
+      return this.resultArray[index].open
+    },
+    clickedField(field) {
+      this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
+
+      if (this.groupingSettings.groupingAllowed) {
+        this.groupingOrderAsc[field.name] = !this.groupingOrderAsc[field.name]
+        if (field.name === "name")
+          this.groupingOrderAsc.alphabetically = !this.groupingOrderAsc.alphabetically
+      }
+    },
+    onSwitchAdvanced() {
+      this.isAdvanced = !this.isAdvanced
+    },
+
+    ///
+>>>>>>> Advanced table options
     isFieldTypeSlot(field) {
       return field.type === "slot"
     },
@@ -394,7 +647,24 @@ export default {
   },
 }
 </script>
+
 <style lang="scss">
+.preview-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-settings {
+  background-color: rgb(247, 245, 245);
+}
+.grouping-settings {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.oc-tbody-tr-accordion {
+  background-color: var(--oc-color-input-bg);
+}
 .oc-table {
   border-collapse: collapse;
   border-spacing: 0;
@@ -460,240 +730,240 @@ export default {
 <docs>
 ```js
 <template>
-  <section>
-    <h3 class="oc-heading-divider">
-      A simple table with plain field types
-    </h3>
-    <oc-table :fields="fields" :data="data" highlighted="4b136c0a-5057-11eb-ac70-eba264112003"
-      disabled="8468c9f0-5057-11eb-924b-934c6fd827a2" :sticky="true">
-      <template #footer>
-        3 resources
-      </template>
-    </oc-table>
-  </section>
+ <section>
+   <h3 class="oc-heading-divider">
+     A simple table with plain field types
+   </h3>
+   <oc-table :fields="fields" :data="data" highlighted="4b136c0a-5057-11eb-ac70-eba264112003"
+     disabled="8468c9f0-5057-11eb-924b-934c6fd827a2" :sticky="true">
+     <template #footer>
+       3 resources
+     </template>
+   </oc-table>
+ </section>
 </template>
 <script>
-  export default {
-    computed: {
-      fields() {
-        return [{
-          name: "resource",
-          title: "Resource",
-          alignH: "left"
-        }, {
-          name: "last_modified",
-          title: "Last modified",
-          alignH: "right"
-        }]
-      },
-      data() {
-        return [{
-          id: "4b136c0a-5057-11eb-ac70-eba264112003",
-          resource: "hello-world.txt",
-          last_modified: 1609962211
-        }, {
-          id: "8468c9f0-5057-11eb-924b-934c6fd827a2",
-          resource: "I am a folder",
-          last_modified: 1608887766
-        }, {
-          id: "9c4cf97e-5057-11eb-8044-b3d5df9caa21",
-          resource: "this is fine.png",
-          last_modified: 1599999999
-        }]
-      }
-    }
-  }
+ export default {
+   computed: {
+     fields() {
+       return [{
+         name: "resource",
+         title: "Resource",
+         alignH: "left"
+       }, {
+         name: "last_modified",
+         title: "Last modified",
+         alignH: "right"
+       }]
+     },
+     data() {
+       return [{
+         id: "4b136c0a-5057-11eb-ac70-eba264112003",
+         resource: "hello-world.txt",
+         last_modified: 1609962211
+       }, {
+         id: "8468c9f0-5057-11eb-924b-934c6fd827a2",
+         resource: "I am a folder",
+         last_modified: 1608887766
+       }, {
+         id: "9c4cf97e-5057-11eb-8044-b3d5df9caa21",
+         resource: "this is fine.png",
+         last_modified: 1599999999
+       }]
+     }
+   }
+ }
 </script>
 ```
 ```js
 <template>
-  <section>
-    <h3 class="oc-heading-divider">
-      A simple table with all existing field types
-    </h3>
-    <oc-table :fields="fields" :data="data">
-      <template v-slot:resourceHeader>
-        <div class="uk-flex uk-flex-middle">
-          <oc-icon name="folder" class="oc-mr-s" />
-          Resource
-        </div>
-      </template>
-      <template v-slot:resource="rowData">
-        <oc-tag>
-          <oc-icon :name="rowData.item.icon" />
-          {{ rowData.item.resource }}
-        </oc-tag>
-      </template>
-    </oc-table>
-  </section>
+ <section>
+   <h3 class="oc-heading-divider">
+     A simple table with all existing field types
+   </h3>
+   <oc-table :fields="fields" :data="data">
+     <template v-slot:resourceHeader>
+       <div class="uk-flex uk-flex-middle">
+         <oc-icon name="folder" class="oc-mr-s" />
+         Resource
+       </div>
+     </template>
+     <template v-slot:resource="rowData">
+       <oc-tag>
+         <oc-icon :name="rowData.item.icon" />
+         {{ rowData.item.resource }}
+       </oc-tag>
+     </template>
+   </oc-table>
+ </section>
 </template>
 <script>
-  export default {
-    computed: {
-      fields() {
-        return [{
-          name: "resource",
-          title: "Resource",
-          headerType: "slot",
-          type: "slot"
-        }, {
-          name: "last_modified",
-          title: "Last modified",
-          type: "callback",
-          callback: function(timestamp) {
-            const date = new Date(timestamp * 1000)
-            const hours = date.getHours()
-            const minutes = "0" + date.getMinutes()
-            const seconds = "0" + date.getSeconds()
-            return hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2)
-          }
-        }]
-      },
-      data() {
-        return [{
-          id: "4b136c0a-5057-11eb-ac70-eba264112003",
-          resource: "hello-world.txt",
-          icon: "text",
-          last_modified: 1609962211
-        }, {
-          id: "8468c9f0-5057-11eb-924b-934c6fd827a2",
-          resource: "I am a folder",
-          icon: "folder",
-          last_modified: 1608887766
-        }, {
-          id: "9c4cf97e-5057-11eb-8044-b3d5df9caa21",
-          resource: "this is fine.png",
-          icon: "image",
-          last_modified: 1599999999
-        }]
-      }
-    }
-  }
+ export default {
+   computed: {
+     fields() {
+       return [{
+         name: "resource",
+         title: "Resource",
+         headerType: "slot",
+         type: "slot"
+       }, {
+         name: "last_modified",
+         title: "Last modified",
+         type: "callback",
+         callback: function(timestamp) {
+           const date = new Date(timestamp * 1000)
+           const hours = date.getHours()
+           const minutes = "0" + date.getMinutes()
+           const seconds = "0" + date.getSeconds()
+           return hours + ":" + minutes.substr(-2) + ":" + seconds.substr(-2)
+         }
+       }]
+     },
+     data() {
+       return [{
+         id: "4b136c0a-5057-11eb-ac70-eba264112003",
+         resource: "hello-world.txt",
+         icon: "text",
+         last_modified: 1609962211
+       }, {
+         id: "8468c9f0-5057-11eb-924b-934c6fd827a2",
+         resource: "I am a folder",
+         icon: "folder",
+         last_modified: 1608887766
+       }, {
+         id: "9c4cf97e-5057-11eb-8044-b3d5df9caa21",
+         resource: "this is fine.png",
+         icon: "image",
+         last_modified: 1599999999
+       }]
+     }
+   }
+ }
 </script>
 ```
 ```js
 <template>
-  <section>
-    <h3 class="oc-heading-divider">
-      A table with long text showing the different text wrapping mechanisms
-    </h3>
-    <oc-table :fields="fields" :data="data" :has-header="true" :hover="true" />
-  </section>
+ <section>
+   <h3 class="oc-heading-divider">
+     A table with long text showing the different text wrapping mechanisms
+   </h3>
+   <oc-table :fields="fields" :data="data" :has-header="true" :hover="true" />
+ </section>
 </template>
 <script>
-  export default {
-    computed: {
-      fields() {
-        return [
-          {
-            name: "truncate",
-            title: "truncate",
-            wrap: "truncate"
-          },
-          {
-            name: "break",
-            title: "break",
-            wrap: "break"
-          },
-          {
-            name: "nowrap",
-            title: "nowrap",
-            wrap: "nowrap"
-          }
-        ]
-      },
-      data() {
-        return [
-          {
-            truncate: "This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually.",
-            break: "This text is supposed to break to new lines if it becomes too long. This text is supposed to break to new lines if it becomes too long. This text is supposed to break to new lines if it becomes too long. This text is supposed to break to new lines if it becomes too long.",
-            nowrap: "This text stays on one line."
-          }
-        ]
-      }
-    }
-  }
+ export default {
+   computed: {
+     fields() {
+       return [
+         {
+           name: "truncate",
+           title: "truncate",
+           wrap: "truncate"
+         },
+         {
+           name: "break",
+           title: "break",
+           wrap: "break"
+         },
+         {
+           name: "nowrap",
+           title: "nowrap",
+           wrap: "nowrap"
+         }
+       ]
+     },
+     data() {
+       return [
+         {
+           truncate: "This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually. This is very long text that will get truncated eventually.",
+           break: "This text is supposed to break to new lines if it becomes too long. This text is supposed to break to new lines if it becomes too long. This text is supposed to break to new lines if it becomes too long. This text is supposed to break to new lines if it becomes too long.",
+           nowrap: "This text stays on one line."
+         }
+       ]
+     }
+   }
+ }
 </script>
 ```
 ```js
 <template>
-  <section>
-    <h3 class="oc-heading-divider">
-      An interactive table showcasing different table features/properties
-    </h3>
-    <oc-table :fields="fields" :data="data" :has-header="hasHeader" :sticky="stickyHeader" :hover="hover">
-      <template v-slot:action="rowData">
-        <oc-button @click="toggle(rowData)" size="small">Toggle</oc-button>
-      </template>
-    </oc-table>
-  </section>
+ <section>
+   <h3 class="oc-heading-divider">
+     An interactive table showcasing different table features/properties
+   </h3>
+   <oc-table :fields="fields" :data="data" :has-header="hasHeader" :sticky="stickyHeader" :hover="hover">
+     <template v-slot:action="rowData">
+       <oc-button @click="toggle(rowData)" size="small">Toggle</oc-button>
+     </template>
+   </oc-table>
+ </section>
 </template>
 <script>
-  export default {
-    data() {
-      return {
-        hasHeader: true,
-        stickyHeader: false,
-        hover: true
-      }
-    },
-    computed: {
-      fields() {
-        return [
-          {
-            name: "property",
-            title: "Property",
-            sortable: true
-          },
-          {
-            name: "description",
-            title: "Description",
-            width: "expand",
-            sortable: true
-          },
-          {
-            name: "state",
-            title: "State",
-            width: "shrink",
-            sortable: true
-          },
-          {
-            name: "action",
-            title: "",
-            type: "slot",
-            width: "shrink"
-          }
-        ]
-      },
-      data() {
-        return [
-          {
-            property: "has-header",
-            description: "Whether or not the table header is visible",
-            state: this.hasHeader,
-            variable: "hasHeader"
-          },
-          {
-            property: "sticky",
-            description: "Whether or not the table header is sticky, causing it to float above the table content when scrolling",
-            state: this.stickyHeader,
-            variable: "stickyHeader"
-          },
-          {
-            property: "hover",
-            description: "Highlight table rows on mouseover",
-            state: this.hover,
-            variable: "hover"
-          }
-        ]
-      }
-    },
-    methods: {
-      toggle(rowData) {
-        this[rowData.item.variable] = !this[rowData.item.variable];
-      }
-    },
-  }
+ export default {
+   data() {
+     return {
+       hasHeader: true,
+       stickyHeader: false,
+       hover: true
+     }
+   },
+   computed: {
+     fields() {
+       return [
+         {
+           name: "property",
+           title: "Property",
+           sortable: true
+         },
+         {
+           name: "description",
+           title: "Description",
+           width: "expand",
+           sortable: true
+         },
+         {
+           name: "state",
+           title: "State",
+           width: "shrink",
+           sortable: true
+         },
+         {
+           name: "action",
+           title: "",
+           type: "slot",
+           width: "shrink"
+         }
+       ]
+     },
+     data() {
+       return [
+         {
+           property: "has-header",
+           description: "Whether or not the table header is visible",
+           state: this.hasHeader,
+           variable: "hasHeader"
+         },
+         {
+           property: "sticky",
+           description: "Whether or not the table header is sticky, causing it to float above the table content when scrolling",
+           state: this.stickyHeader,
+           variable: "stickyHeader"
+         },
+         {
+           property: "hover",
+           description: "Highlight table rows on mouseover",
+           state: this.hover,
+           variable: "hover"
+         }
+       ]
+     }
+   },
+   methods: {
+     toggle(rowData) {
+       this[rowData.item.variable] = !this[rowData.item.variable]
+     }
+   },
+ }
 </script>
 ```
 </docs>
