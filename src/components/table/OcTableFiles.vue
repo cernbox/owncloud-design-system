@@ -1,5 +1,7 @@
 <template>
   <oc-table
+    :grouping-settings="groupingSettings"
+    :grouping-function="groupingFunction"
     :data="resources"
     :fields="fields"
     :highlighted="highlighted"
@@ -92,7 +94,6 @@
 
 <script>
 import { DateTime } from "luxon"
-
 import OcTable from "./OcTable.vue"
 import OcResource from "../resource/OcResource.vue"
 import OcIcon from "../OcIcon.vue"
@@ -101,7 +102,6 @@ import OcCheckbox from "../OcCheckbox.vue"
 import OcButton from "../OcButton.vue"
 import OcResourceSize from "../resource/OcResourceSize.vue"
 import { EVENT_TROW_MOUNTED } from "./helpers/constants"
-
 export default {
   name: "OcTableFiles",
   status: "review",
@@ -112,6 +112,14 @@ export default {
     event: "select",
   },
   props: {
+    groupingFunction: {
+      type: Function,
+      required: false,
+    },
+    groupingSettings: {
+      type: Object,
+      required: false,
+    },
     /**
      * Resources to be displayed in the table.
      * Required fields:
@@ -233,10 +241,8 @@ export default {
       if (this.resources.length === 0) {
         return []
       }
-
       const firstResource = this.resources[0]
       const fields = []
-
       if (this.isSelectable) {
         fields.push({
           name: "select",
@@ -246,7 +252,6 @@ export default {
           width: "shrink",
         })
       }
-
       fields.push(
         ...[
           {
@@ -318,7 +323,6 @@ export default {
           },
         ].filter(field => Object.prototype.hasOwnProperty.call(firstResource, field.name))
       )
-
       if (this.hasActions) {
         fields.push({
           name: "actions",
@@ -328,10 +332,8 @@ export default {
           wrap: "nowrap",
         })
       }
-
       return fields
     },
-
     areAllResourcesSelected() {
       return this.selection.length === this.resources.length
     },
@@ -352,11 +354,9 @@ export default {
        */
       this.$emit("showDetails", resource)
     },
-
     formatDate(date) {
       return DateTime.fromJSDate(new Date(date)).toRelative()
     },
-
     emitSelect(resources) {
       /**
        * Triggered when a checkbox for selecting a resource or the checkbox for selecting all resources is clicked
@@ -364,15 +364,12 @@ export default {
        */
       this.$emit("select", resources)
     },
-
     toggleSelectionAll() {
       if (this.areAllResourcesSelected) {
         return this.emitSelect([])
       }
-
       this.emitSelect(this.resources)
     },
-
     emitFileClick(resource) {
       /**
        * Triggered when a default action is triggered on a file
@@ -380,32 +377,25 @@ export default {
        */
       this.$emit("fileClick", resource)
     },
-
     isResourceClickable(resourceId) {
       if (!this.areResourcesClickable) {
         return false
       }
-
       return Array.isArray(this.disabled)
         ? !this.disabled.includes(resourceId)
         : this.disabled !== resourceId
     },
-
     getResourceCheckboxLabel(resource) {
       if (resource.type === "folder") {
         return this.$gettext("Select folder")
       }
-
       return this.$gettext("Select file")
     },
-
     getSharedWithAvatarDescription(resource) {
       const resourceType =
         resource.type === "folder" ? this.$gettext("folder") : this.$gettext("file")
-
       const shareCount = resource.sharedWith.filter(u => !u.link).length
       const linkCount = resource.sharedWith.filter(u => !!u.link).length
-
       const shareText =
         shareCount > 0
           ? this.$ngettext(
@@ -422,18 +412,14 @@ export default {
               linkCount
             )
           : ""
-
       const description = [shareText, linkText].join(" ")
-
       const translated = this.$gettextInterpolate(description, {
         resourceType,
         shareCount,
         linkCount,
       })
-
       return translated
     },
-
     getOwnerAvatarDescription(resource) {
       const translated = this.$gettext("This %{ resourceType } is owned by %{ ownerName }")
       const resourceType =
@@ -442,7 +428,6 @@ export default {
         resourceType,
         ownerName: resource.owner[0].displayName,
       })
-
       return description
     },
   },
@@ -457,7 +442,6 @@ export default {
     top: 50%;
     transform: translateY(-50%);
   }
-
   &-actions {
     align-items: center;
     display: flex;
@@ -465,7 +449,6 @@ export default {
     gap: var(--oc-space-xsmall);
     justify-content: flex-end;
   }
-
   &-select-all {
     align-items: center;
     display: flex;
@@ -475,6 +458,7 @@ export default {
 </style>
 
 <docs>
+<!--
 ```js
 <template>
   <div>
@@ -677,11 +661,11 @@ export default {
   }
 </script>
 ```
-
+-->
 ## Shared with me files table
 ```js
 <template>
-  <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected">
+  <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected" :groupingSettings="groupingSettings">
     <template v-slot:status="props">
       <div class="uk-flex uk-flex-right" style="align-items: baseline;">
         <oc-button
@@ -711,64 +695,210 @@ export default {
       selected: []
     }),
     computed: {
-      resources() {
-        return [
-          {
-            name: "forest.jpg",
-            path: "images/nature/forest.jpg",
-            thumbnail: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
-            indicators: [],
-            type: "file",
-            sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
-            owner: [{
-              id: "bob",
-              username: "bob",
-              displayName: "Bob",
-              avatar: "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-            }],
-            status: 1
-          },
-          {
-            name: "notes.txt",
-            path: "/Documents/notes.txt",
-            icon: "text",
-            indicators: [],
-            type: "file",
-            sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
-            owner: [{
-              id: "einstein",
-              username: "einstein",
-              displayName: "Einstein"
-            }],
-            status: 0
-          },
-          {
-            name: "Documents",
-            path: "/Documents",
-            icon: "folder",
-            indicators: [],
-            type: "folder",
-            sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
-            owner: [{
+          groupingSettings(){
+      return {
+        groupingAllowed: true,
+        defaultGroupingBy: "None",
+        passedGroupingBy: "",  //None, creation, owner,alphabetically
+        showGroupingOptions: true,
+        previewTable: true,
+        previewAmount: 4,
+        groupingFunctions: {
+  "owner": function(row) {
+    return row.owner[0].displayName
+  },
+  "alphabetically": function(row) {
+    return row.name.charAt(0).toLowerCase()
+  },
+  "creation": function(row) {
+    let now = new Date()
+    let interval1 = new Date()
+    interval1.setDate(interval1.getDate()-7)
+    let interval2 = new Date()
+    interval2.setDate(interval2.getDate()-30)
+
+    if (Date.parse(row.sdate)>interval1.getTime()){
+      return "Recent"
+    } else if (Date.parse(row.sdate)>interval2.getTime()){
+      return "This Month"
+    } else return "Older"
+  }
+},
+      }
+    },
+    resources() {
+      return [
+        {
+          name: "A",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 29 Jun 2021 14:34:04 GMT",
+          owner: [
+            {
               id: "marie",
               username: "marie",
               displayName: "Marie",
-              avatar: "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
-            }],
-            status: 2
-          }
-        ]
-      }
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "B",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 4 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "D",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 6 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "Dodo",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 15 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "C",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 17 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "Aforest.jpg",
+          path: "images/nature/forest.jpg",
+          preview: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
+          indicators: [],
+          type: "file",
+          sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "bob",
+              username: "bob",
+              displayName: "Bob",
+              avatar:
+                "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 1,
+        },
+        {
+          name: "ag.txt",
+          path: "/Documents/notes.txt",
+          icon: "text",
+          indicators: [],
+          type: "file",
+          sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "einstein",
+              username: "einstein",
+              displayName: "Einstein",
+            },
+          ],
+          status: 0,
+        },
+        {
+          name: "H",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 07 Jun 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "Hey",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 11 Jan 2020 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+      ]
     },
+  },
     methods: {
+
       shareStatus(status) {
         switch (status) {
           case 0:
             return "Accepted"
-
           case 1:
             return "Pending"
-
           case 2:
             return "Declined"
         }
@@ -777,7 +907,7 @@ export default {
   }
 </script>
 ```
-
+<!--
 ## Trashbin files table
 ```js
 <template>
@@ -880,5 +1010,5 @@ export default {
     }
   }
 </script>
-```
+```-->
 </docs>
