@@ -3,13 +3,21 @@
     <div>
       <div class="grouping-settings">
         <div
-          v-if="groupingSettings.groupingAllowed && groupingSettings.showGroupingOptions"
+          v-if="
+            groupingSettings &&
+            groupingSettings.groupingAllowed &&
+            groupingSettings.showGroupingOptions
+          "
           class="oc-docs-width-small"
         >
           <label class="oc-mx-s">Group By:</label>
         </div>
         <div
-          v-if="groupingSettings.groupingAllowed && groupingSettings.showGroupingOptions"
+          v-if="
+            groupingSettings &&
+            groupingSettings.groupingAllowed &&
+            groupingSettings.showGroupingOptions
+          "
           class="oc-docs-width-medium"
         >
           <oc-select
@@ -96,17 +104,17 @@
           ><oc-td style="colspan='2'"
             ><oc-avatar
               v-if="selected === 'owner'"
-              width="30"
+              :width="30"
               style="
                  {
                   width: 30px;
                   height: 30px;
                 }
               "
-              user-name="item.name"
+              :user-name="item.name"
               :src="item.data[0].owner[0].avatar"
               accessible-label="item.name" /></oc-td
-          ><oc-td :colspan="4"> {{ item.name }} </oc-td
+          ><oc-td :colspan="fields.length - 2"> {{ item.name }} </oc-td
           ><oc-td>
             <span
               class="oc-ml-xs oc-icon-l"
@@ -155,7 +163,13 @@
       </tbody>
 
       <!-- Show more/show less footer for preview enabled -->
-      <tbody v-if="groupingSettings.previewTable">
+      <tbody
+        v-if="
+          groupingSettings &&
+          groupingSettings.previewTable &&
+          data.length > groupingSettings.previewAmount + 1
+        "
+      >
         <oc-tr
           style="
              {
@@ -168,7 +182,7 @@
           <oc-td
             v-if="previewEnabled"
             key="showMore"
-            :colspan="6"
+            :colspan="fields.length"
             style="
                {
                 text-align: center;
@@ -178,7 +192,7 @@
           ><oc-td
             v-else
             key="showLess"
-            :colspan="6"
+            :colspan="fields.length"
             style="
                {
                 text-align: center;
@@ -332,13 +346,15 @@ export default {
   },
   data() {
     return {
-      selected: this.groupingSettings.passedGroupingBy || this.groupingSettings.defaultGroupingBy,
+      selected: this.groupingSettings
+        ? this.groupingSettings.passedGroupingBy || this.groupingSettings.defaultGroupingBy
+        : false,
       accordionClosed: [],
       previewEnabled: true,
       previewData: [],
       resultArray: [],
       showMore: false,
-      groupingOrderAsc: this.groupingOrder(),
+      groupingOrderAsc: this.groupingSettings ? this.groupingOrder() : {},
       constants: {
         EVENT_THEAD_CLICKED,
         EVENT_TROW_CLICKED,
@@ -348,7 +364,13 @@ export default {
   },
   computed: {
     tableData() {
-      if (this.groupingSettings.previewTable && this.selected === "None" && this.previewEnabled)
+      if (
+        this.groupingSettings &&
+        this.groupingSettings.previewTable &&
+        this.data.length > this.groupingSettings.previewAmount + 1 &&
+        this.selected === "None" &&
+        this.previewEnabled
+      )
         return this.sortedData
           ? this.sortedData.slice(0, this.groupingSettings.previewAmount || 3)
           : this.data.slice(0, this.groupingSettings.previewAmount || 3)
@@ -379,7 +401,7 @@ export default {
         this.groupingOrderAsc[this.selected]
       )
 
-      if (this.groupingSettings.previewTable && this.previewEnabled) {
+      if (this.groupingSettings && this.groupingSettings.previewTable && this.previewEnabled) {
         let previewCount = this.groupingSettings.previewAmount + 1
 
         result.forEach(e => {
@@ -443,7 +465,7 @@ export default {
     clickedField(field) {
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
 
-      if (this.groupingSettings.groupingAllowed) {
+      if (this.groupingSettings && this.groupingSettings.groupingAllowed) {
         this.groupingOrderAsc[field.name] = !this.groupingOrderAsc[field.name]
         if (field.name === "name")
           this.groupingOrderAsc.alphabetically = !this.groupingOrderAsc.alphabetically
@@ -592,6 +614,7 @@ export default {
 }
 .preview-settings {
   background-color: rgb(247, 245, 245);
+  cursor: pointer;
 }
 .grouping-settings {
   display: flex;
