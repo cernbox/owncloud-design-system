@@ -1,7 +1,6 @@
 <template>
   <oc-table
     :grouping-settings="groupingSettings"
-    :grouping-function="groupingFunction"
     :data="resources"
     :fields="fields"
     :highlighted="selectedIds"
