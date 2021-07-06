@@ -346,15 +346,21 @@ export default {
   },
   data() {
     return {
-      selected: this.groupingSettings
-        ? this.groupingSettings.passedGroupingBy || this.groupingSettings.defaultGroupingBy
-        : false,
+      selected:
+        this.groupingSettings && this.groupingSettings.passedGroupingBy
+          ? this.groupingSettings.passedGroupingBy
+          : this.groupingSettings && this.groupingSettings.defaultGroupingBy
+          ? this.groupingSettings.defaultGroupingBy
+          : "None",
       accordionClosed: [],
       previewEnabled: true,
       previewData: [],
       resultArray: [],
       showMore: false,
-      groupingOrderAsc: this.groupingSettings ? this.groupingOrder() : {},
+      groupingOrderAsc:
+        this.groupingSettings && this.groupingSettings.groupingFunctions
+          ? this.groupingOrder()
+          : {},
       constants: {
         EVENT_THEAD_CLICKED,
         EVENT_TROW_CLICKED,
