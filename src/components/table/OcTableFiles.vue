@@ -111,6 +111,7 @@
 
 <script>
 import { DateTime } from "luxon"
+
 import OcTable from "./OcTable.vue"
 import OcResource from "../resource/OcResource.vue"
 import OcIcon from "../OcIcon.vue"
@@ -118,8 +119,12 @@ import OcAvatarGroup from "../avatars/OcAvatarGroup.vue"
 import OcCheckbox from "../OcCheckbox.vue"
 import OcButton from "../OcButton.vue"
 import OcResourceSize from "../resource/OcResourceSize.vue"
+<<<<<<< HEAD
 import OcDrop from "../OcDrop.vue"
 import { EVENT_TROW_MOUNTED, EVENT_FILE_DROPPED } from "./helpers/constants"
+=======
+import { EVENT_TROW_MOUNTED } from "./helpers/constants"
+>>>>>>> linting to upstream version
 
 export default {
   name: "OcTableFiles",
@@ -351,6 +356,7 @@ export default {
           },
         ].filter(field => Object.prototype.hasOwnProperty.call(firstResource, field.name))
       )
+
       if (this.hasActions) {
         fields.push({
           name: "actions",
@@ -360,8 +366,10 @@ export default {
           wrap: "nowrap",
         })
       }
+
       return fields
     },
+
     areAllResourcesSelected() {
       return this.selection.length === this.resources.length
     },
@@ -438,6 +446,7 @@ export default {
        */
       this.emitSelect([resource])
     },
+
     formatDate(date) {
       return DateTime.fromJSDate(new Date(date)).toRelative()
     },
@@ -452,12 +461,14 @@ export default {
        */
       this.$emit("select", resources)
     },
+
     toggleSelectionAll() {
       if (this.areAllResourcesSelected) {
         return this.emitSelect([])
       }
       this.emitSelect(this.resources)
     },
+
     emitFileClick(resource) {
       /**
        * Triggered when a default action is triggered on a file
@@ -465,6 +476,7 @@ export default {
        */
       this.$emit("fileClick", resource)
     },
+
     isResourceClickable(resourceId) {
       if (!this.areResourcesClickable) {
         return false
@@ -473,12 +485,14 @@ export default {
         ? !this.disabled.includes(resourceId)
         : this.disabled !== resourceId
     },
+
     getResourceCheckboxLabel(resource) {
       if (resource.type === "folder") {
         return this.$gettext("Select folder")
       }
       return this.$gettext("Select file")
     },
+
     getSharedWithAvatarDescription(resource) {
       const resourceType =
         resource.type === "folder" ? this.$gettext("folder") : this.$gettext("file")
@@ -506,8 +520,10 @@ export default {
         shareCount,
         linkCount,
       })
+
       return translated
     },
+
     getOwnerAvatarDescription(resource) {
       const translated = this.$gettext("This %{ resourceType } is owned by %{ ownerName }")
       const resourceType =
@@ -516,6 +532,7 @@ export default {
         resourceType,
         ownerName: resource.owner[0].displayName,
       })
+
       return description
     },
   },
@@ -530,6 +547,7 @@ export default {
     top: 50%;
     transform: translateY(-50%);
   }
+
   &-actions {
     align-items: center;
     display: flex;
@@ -537,6 +555,7 @@ export default {
     gap: var(--oc-space-xsmall);
     justify-content: flex-end;
   }
+
   &-select-all {
     align-items: center;
     display: flex;
@@ -546,7 +565,6 @@ export default {
 </style>
 
 <docs>
-<!--
 ```js
 <template>
   <div>
@@ -765,7 +783,7 @@ export default {
   }
 </script>
 ```
--->
+
 ## Shared with me files table
 ```js
 <template>
@@ -1011,7 +1029,7 @@ export default {
   }
 </script>
 ```
-<!--
+
 ## Trashbin files table
 ```js
 <template>
@@ -1117,5 +1135,5 @@ export default {
     }
   }
 </script>
-```-->
+```
 </docs>
