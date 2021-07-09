@@ -3,21 +3,13 @@
     <div>
       <div class="grouping-settings">
         <div
-          v-if="
-            groupingSettings &&
-            groupingSettings.groupingAllowed &&
-            groupingSettings.showGroupingOptions
-          "
+          v-if="groupingSettings && groupingAllowed && groupingSettings.showGroupingOptions"
           class="oc-docs-width-small"
         >
           <label class="oc-mx-s">Group By:</label>
         </div>
         <div
-          v-if="
-            groupingSettings &&
-            groupingSettings.groupingAllowed &&
-            groupingSettings.showGroupingOptions
-          "
+          v-if="groupingSettings && groupingAllowed && groupingSettings.showGroupingOptions"
           class="oc-docs-width-medium"
         >
           <oc-select
@@ -90,7 +82,7 @@
 
       <tbody
         v-for="(item, index) in groupedItems"
-        v-else-if="groupingSettings.groupingAllowed && selected !== 'None'"
+        v-else-if="groupingAllowed && selected !== 'None'"
         :key="`${item.name + index}`"
       >
         <oc-tr
@@ -166,7 +158,7 @@
       <tbody
         v-if="
           groupingSettings &&
-          groupingSettings.previewTable &&
+          groupingSettings.previewAmount &&
           data.length > groupingSettings.previewAmount + 1
         "
       >
@@ -247,6 +239,13 @@ export default {
   },
   mixins: [SortMixin],
   props: {
+    /**
+     * Grouping settings for the table. Following settings are possible:<br />
+     * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.<br />
+     * -**groupingBy**: must be either one of the keys in groupingFunctions or 'None'. If not set, default grouping will be 'None'.<br />
+     * -**ShowGroupingOptions**:  boolean value for showing or hinding the select element with grouping options above the table. <br />
+     * -**PreviewAmount**: Integer value that is used to show only the first n data rows of the table.
+     */
     groupingSettings: {
       type: Object,
       required: false,
@@ -347,10 +346,8 @@ export default {
   data() {
     return {
       selected:
-        this.groupingSettings && this.groupingSettings.passedGroupingBy
-          ? this.groupingSettings.passedGroupingBy
-          : this.groupingSettings && this.groupingSettings.defaultGroupingBy
-          ? this.groupingSettings.defaultGroupingBy
+        this.groupingSettings && this.groupingSettings.groupingBy
+          ? this.groupingSettings.groupingBy
           : "None",
       accordionClosed: [],
       previewEnabled: true,
@@ -372,7 +369,7 @@ export default {
     tableData() {
       if (
         this.groupingSettings &&
-        this.groupingSettings.previewTable &&
+        this.groupingSettings.previewAmount &&
         this.data.length > this.groupingSettings.previewAmount + 1 &&
         this.selected === "None" &&
         this.previewEnabled
@@ -401,13 +398,13 @@ export default {
     },
     //my computed
     groupedItems() {
-      let result = this.groupingFunction(
+      let result = this.createGroupedItems(
         this.selected,
         this.tableData,
         this.groupingOrderAsc[this.selected]
       )
 
-      if (this.groupingSettings && this.groupingSettings.previewTable && this.previewEnabled) {
+      if (this.groupingSettings && this.previewEnabled && this.groupingSettings.previewAmount) {
         let previewCount = this.groupingSettings.previewAmount + 1
 
         result.forEach(e => {
@@ -422,6 +419,13 @@ export default {
       this.resultArray = result
       return result
     },
+    groupingAllowed() {
+      return this.groupingSettings &&
+        this.groupingSettings.groupingFunctions &&
+        Object.keys(this.groupingSettings.groupingFunctions).length > 0
+        ? true
+        : false
+    },
   },
   methods: {
     //my methods
@@ -432,34 +436,32 @@ export default {
       )
       return groupingOrder
     },
-    groupingFunction(col, data, asc) {
-      let result = {}
+    createGroupedItems(col, data, asc) {
+      let groups = {}
+      let resultArray = []
 
       if (Object.keys(this.groupingSettings.groupingFunctions).includes(col)) {
         data.forEach(row => {
-          result[this.groupingSettings.groupingFunctions[col](row)]
-            ? result[this.groupingSettings.groupingFunctions[col](row)].push(row)
-            : (result[this.groupingSettings.groupingFunctions[col](row)] = [row])
+          groups[this.groupingSettings.groupingFunctions[col](row)]
+            ? groups[this.groupingSettings.groupingFunctions[col](row)].push(row)
+            : (groups[this.groupingSettings.groupingFunctions[col](row)] = [row])
         })
-        return this.produceGroups(Object.entries(result), asc, col)
-      }
-    },
 
-    produceGroups(arr, asc, col) {
-      let resultArray = []
-      for (const [key, value] of arr) {
-        let obj = {}
-        obj.name = key.toUpperCase()
-        obj.open = true
-        obj.data = value
-        resultArray.push(obj)
+        for (const [key, value] of Object.entries(groups)) {
+          resultArray.push({
+            name: key.toUpperCase(),
+            open: true,
+            data: value,
+          })
+        }
+
+        if (col === "creation")
+          return resultArray.sort((a, b) =>
+            Date.parse(a.data[0].sdate) > Date.parse(b.data[0].sdate) ? -1 : 1
+          )
+        if (asc) return resultArray.sort((a, b) => (a.name > b.name ? 1 : -1))
+        else return resultArray.sort((a, b) => (a.name > b.name ? -1 : 1))
       }
-      if (col === "creation")
-        return resultArray.sort((a, b) =>
-          Date.parse(a.data[0].sdate) > Date.parse(b.data[0].sdate) ? -1 : 1
-        )
-      if (asc) return resultArray.sort((a, b) => (a.name > b.name ? 1 : -1))
-      else return resultArray.sort((a, b) => (a.name > b.name ? -1 : 1))
     },
 
     toggle(item, index) {
@@ -471,7 +473,7 @@ export default {
     clickedField(field) {
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
 
-      if (this.groupingSettings && this.groupingSettings.groupingAllowed) {
+      if (this.groupingSettings && this.groupingAllowed) {
         this.groupingOrderAsc[field.name] = !this.groupingOrderAsc[field.name]
         if (field.name === "name")
           this.groupingOrderAsc.alphabetically = !this.groupingOrderAsc.alphabetically

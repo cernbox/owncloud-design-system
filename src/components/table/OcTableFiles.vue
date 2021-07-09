@@ -113,10 +113,13 @@ export default {
     event: "select",
   },
   props: {
-    groupingFunction: {
-      type: Function,
-      required: false,
-    },
+    /**
+     * Grouping settings for the table. Following settings are possible:<br />
+     * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.
+     * -**groupingBy**: must be either one of the keys in groupingFunctions or 'None'. If not set, default grouping will be 'None'.<br />
+     * -**ShowGroupingOptions**:  boolean value for showing or hinding the select element with grouping options above the table. <br />
+     * -**PreviewAmount**: Integer value that is used to show only the first n data rows of the table.
+     */
     groupingSettings: {
       type: Object,
       required: false,
@@ -681,6 +684,208 @@ export default {
 ## Shared with me files table
 ```js
 <template>
+  <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected">
+    <template v-slot:status="props">
+      <div class="uk-flex uk-flex-right" style="align-items: baseline;">
+        <oc-button
+          v-if="props.resource.status === 1 || props.resource.status === 2"
+          appearance="raw"
+          variation="primary"
+          class="oc-mr-xs"
+          v-text="'Accept'"
+        />
+        <oc-button
+          v-if="props.resource.status === 1 || props.resource.status === 0"
+          appearance="raw"
+          variation="primary"
+          class="oc-mr-xs"
+          v-text="'Decline'"
+        />
+        <span
+          v-text="shareStatus(props.resource.status)"
+        />
+      </div>
+    </template>
+  </oc-table-files>
+</template>
+<script>
+  export default {
+    data: () => ({
+      selected: []
+    }),
+    computed: {
+      resources() {
+        return [
+          {
+            name: "forest.jpg",
+            path: "images/nature/forest.jpg",
+            thumbnail: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
+            indicators: [],
+            type: "file",
+            sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+            owner: [{
+              id: "bob",
+              username: "bob",
+              displayName: "Bob",
+              avatar: "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+            }],
+            status: 1
+          },
+          {
+            name: "notes.txt",
+            path: "/Documents/notes.txt",
+            icon: "text",
+            indicators: [],
+            type: "file",
+            sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+            owner: [{
+              id: "einstein",
+              username: "einstein",
+              displayName: "Einstein"
+            }],
+            status: 0
+          },
+          {
+            name: "Documents",
+            path: "/Documents",
+            icon: "folder",
+            indicators: [],
+            type: "folder",
+            sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+            owner: [{
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar: "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60"
+            }],
+            status: 2
+          }
+        ]
+      }
+    },
+    methods: {
+      shareStatus(status) {
+        switch (status) {
+          case 0:
+            return "Accepted"
+          case 1:
+            return "Pending"
+          case 2:
+            return "Declined"
+        }
+      }
+    }
+  }
+</script>
+```
+
+## Trashbin files table
+```js
+<template>
+  <oc-table-files :resources="resources" :arePathsDisplayed="true" :areThumbnailsDisplayed="false" v-model="selected" />
+</template>
+<script>
+  export default {
+    data: () => ({
+      selected: []
+    }),
+    computed: {
+      resources() {
+        return [
+          {
+            name: "forest.jpg",
+            path: "images/nature/forest.jpg",
+            icon: "image",
+            indicators: [],
+            type: "file",
+            ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          },
+          {
+            name: "notes.txt",
+            path: "/Documents/notes.txt",
+            icon: "text",
+            indicators: [],
+            type: "file",
+            ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          },
+          {
+            name: "Documents",
+            path: "/Documents",
+            icon: "folder",
+            indicators: [],
+            type: "folder",
+            ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          }
+        ]
+      }
+    }
+  }
+</script>
+```
+
+## With disabled actions
+```js
+<template>
+  <oc-table-files :resources="resources" v-model="selected" :hasActions="false" :isResourceClickable="false" />
+</template>
+<script>
+export default {
+    data: () => ({
+      selected: []
+    }),
+    computed: {
+      resources() {
+        return [
+          {
+            id: "forest",
+            name: "forest.jpg",
+            path: "images/nature/forest.jpg",
+            thumbnail: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
+            indicators: [],
+            type: "file",
+            size: "111000234",
+            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          },
+          {
+            id: "notes",
+            name: "notes.txt",
+            path: "/Documents/notes.txt",
+            icon: "text",
+            indicators: [],
+            type: "file",
+            size: "1245",
+            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          },
+          {
+            id: "documents",
+            name: "Documents",
+            path: "/Documents",
+            icon: "folder",
+            indicators: [],
+            type: "folder",
+            size: "5324435",
+            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          },
+          {
+            id: "pictures",
+            name: "Pictures and Movies as well as other resources",
+            path: "/Pictures and Movies as well as other resources",
+            icon: "folder",
+            indicators: [],
+            type: "folder",
+            size: "4323556",
+            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
+          }
+        ]
+      }
+    }
+  }
+</script>
+```
+
+## Shared with me files table with grouping options
+```js
+<template>
   <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected" :groupingSettings="groupingSettings">
     <template v-slot:status="props">
       <div class="uk-flex uk-flex-right" style="align-items: baseline;">
@@ -711,35 +916,32 @@ export default {
       selected: []
     }),
     computed: {
-          groupingSettings(){
-      return {
-        groupingAllowed: true,
-        defaultGroupingBy: "None",
-        passedGroupingBy: "",  //None, creation, owner,alphabetically
-        showGroupingOptions: true,
-        previewTable: true,
-        previewAmount: 4,
-        groupingFunctions: {
-  "owner": function(row) {
-    return row.owner[0].displayName
-  },
-  "alphabetically": function(row) {
-    return row.name.charAt(0).toLowerCase()
-  },
-  "creation": function(row) {
-    let now = new Date()
-    let interval1 = new Date()
-    interval1.setDate(interval1.getDate()-7)
-    let interval2 = new Date()
-    interval2.setDate(interval2.getDate()-30)
+      groupingSettings(){
+        return {
+          groupingBy: "owner",
+          showGroupingOptions: true,
+          previewAmount: 4,
+          groupingFunctions: {
+            "owner": function(row) {
+              return row.owner[0].displayName
+            },
+            "alphabetically": function(row) {
+              return row.name.charAt(0).toLowerCase()
+            },
+            "creation": function(row) {
+              let now = new Date()
+              let interval1 = new Date()
+              interval1.setDate(interval1.getDate()-7)
+              let interval2 = new Date()
+              interval2.setDate(interval2.getDate()-30)
 
-    if (Date.parse(row.sdate)>interval1.getTime()){
-      return "Recent"
-    } else if (Date.parse(row.sdate)>interval2.getTime()){
-      return "This Month"
-    } else return "Older"
-  }
-},
+              if (Date.parse(row.sdate)>interval1.getTime()){
+                return "Recent"
+              } else if (Date.parse(row.sdate)>interval2.getTime()){
+                return "This Month"
+              } else return "Older"
+            }
+          },
       }
     },
     resources() {
@@ -918,110 +1120,6 @@ export default {
           case 2:
             return "Declined"
         }
-      }
-    }
-  }
-</script>
-```
-
-## Trashbin files table
-```js
-<template>
-  <oc-table-files :resources="resources" :arePathsDisplayed="true" :areThumbnailsDisplayed="false" v-model="selected" />
-</template>
-<script>
-  export default {
-    data: () => ({
-      selected: []
-    }),
-    computed: {
-      resources() {
-        return [
-          {
-            name: "forest.jpg",
-            path: "images/nature/forest.jpg",
-            icon: "image",
-            indicators: [],
-            type: "file",
-            ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          },
-          {
-            name: "notes.txt",
-            path: "/Documents/notes.txt",
-            icon: "text",
-            indicators: [],
-            type: "file",
-            ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          },
-          {
-            name: "Documents",
-            path: "/Documents",
-            icon: "folder",
-            indicators: [],
-            type: "folder",
-            ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          }
-        ]
-      }
-    }
-  }
-</script>
-```
-
-## With disabled actions
-```js
-<template>
-  <oc-table-files :resources="resources" v-model="selected" :hasActions="false" :isResourceClickable="false" />
-</template>
-<script>
-export default {
-    data: () => ({
-      selected: []
-    }),
-    computed: {
-      resources() {
-        return [
-          {
-            id: "forest",
-            name: "forest.jpg",
-            path: "images/nature/forest.jpg",
-            thumbnail: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
-            indicators: [],
-            type: "file",
-            size: "111000234",
-            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          },
-          {
-            id: "notes",
-            name: "notes.txt",
-            path: "/Documents/notes.txt",
-            icon: "text",
-            indicators: [],
-            type: "file",
-            size: "1245",
-            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          },
-          {
-            id: "documents",
-            name: "Documents",
-            path: "/Documents",
-            icon: "folder",
-            indicators: [],
-            type: "folder",
-            size: "5324435",
-            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          },
-          {
-            id: "pictures",
-            name: "Pictures and Movies as well as other resources",
-            path: "/Pictures and Movies as well as other resources",
-            icon: "folder",
-            indicators: [],
-            type: "folder",
-            size: "4323556",
-            mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
-          }
-        ]
       }
     }
   }
