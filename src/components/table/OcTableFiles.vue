@@ -1,5 +1,6 @@
 <template>
   <oc-table
+    :grouping-settings="groupingSettings"
     :data="resources"
     :fields="fields"
     :highlighted="highlighted"
@@ -112,6 +113,17 @@ export default {
     event: "select",
   },
   props: {
+    /**
+     * Grouping settings for the table. Following settings are possible:<br />
+     * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.
+     * -**groupingBy**: must be either one of the keys in groupingFunctions or 'None'. If not set, default grouping will be 'None'.<br />
+     * -**ShowGroupingOptions**:  boolean value for showing or hinding the select element with grouping options above the table. <br />
+     * -**PreviewAmount**: Integer value that is used to show only the first n data rows of the table.
+     */
+    groupingSettings: {
+      type: Object,
+      required: false,
+    },
     /**
      * Resources to be displayed in the table.
      * Required fields:
@@ -233,10 +245,8 @@ export default {
       if (this.resources.length === 0) {
         return []
       }
-
       const firstResource = this.resources[0]
       const fields = []
-
       if (this.isSelectable) {
         fields.push({
           name: "select",
@@ -246,7 +256,6 @@ export default {
           width: "shrink",
         })
       }
-
       fields.push(
         ...[
           {
@@ -345,6 +354,7 @@ export default {
        */
       this.$emit("rowMounted", resource, component)
     },
+
     showDetails(resource) {
       /**
        * Triggered when the showDetails button in the actions column is clicked
@@ -369,7 +379,6 @@ export default {
       if (this.areAllResourcesSelected) {
         return this.emitSelect([])
       }
-
       this.emitSelect(this.resources)
     },
 
@@ -385,7 +394,6 @@ export default {
       if (!this.areResourcesClickable) {
         return false
       }
-
       return Array.isArray(this.disabled)
         ? !this.disabled.includes(resourceId)
         : this.disabled !== resourceId
@@ -395,17 +403,14 @@ export default {
       if (resource.type === "folder") {
         return this.$gettext("Select folder")
       }
-
       return this.$gettext("Select file")
     },
 
     getSharedWithAvatarDescription(resource) {
       const resourceType =
         resource.type === "folder" ? this.$gettext("folder") : this.$gettext("file")
-
       const shareCount = resource.sharedWith.filter(u => !u.link).length
       const linkCount = resource.sharedWith.filter(u => !!u.link).length
-
       const shareText =
         shareCount > 0
           ? this.$ngettext(
@@ -422,9 +427,7 @@ export default {
               linkCount
             )
           : ""
-
       const description = [shareText, linkText].join(" ")
-
       const translated = this.$gettextInterpolate(description, {
         resourceType,
         shareCount,
@@ -765,10 +768,8 @@ export default {
         switch (status) {
           case 0:
             return "Accepted"
-
           case 1:
             return "Pending"
-
           case 2:
             return "Declined"
         }
@@ -876,6 +877,249 @@ export default {
             mdate: "Mon, 11 Jan 2021 14:34:04 GMT"
           }
         ]
+      }
+    }
+  }
+</script>
+```
+
+## Shared with me files table with grouping options
+```js
+<template>
+  <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected" :groupingSettings="groupingSettings">
+    <template v-slot:status="props">
+      <div class="uk-flex uk-flex-right" style="align-items: baseline;">
+        <oc-button
+          v-if="props.resource.status === 1 || props.resource.status === 2"
+          appearance="raw"
+          variation="primary"
+          class="oc-mr-xs"
+          v-text="'Accept'"
+        />
+        <oc-button
+          v-if="props.resource.status === 1 || props.resource.status === 0"
+          appearance="raw"
+          variation="primary"
+          class="oc-mr-xs"
+          v-text="'Decline'"
+        />
+        <span
+          v-text="shareStatus(props.resource.status)"
+        />
+      </div>
+    </template>
+  </oc-table-files>
+</template>
+<script>
+  export default {
+    data: () => ({
+      selected: []
+    }),
+    computed: {
+      groupingSettings(){
+        return {
+          groupingBy: "owner",
+          showGroupingOptions: true,
+          previewAmount: 4,
+          groupingFunctions: {
+            "owner": function(row) {
+              return row.owner[0].displayName
+            },
+            "alphabetically": function(row) {
+              return row.name.charAt(0).toLowerCase()
+            },
+            "creation": function(row) {
+              let now = new Date()
+              let interval1 = new Date()
+              interval1.setDate(interval1.getDate()-7)
+              let interval2 = new Date()
+              interval2.setDate(interval2.getDate()-30)
+
+              if (Date.parse(row.sdate)>interval1.getTime()){
+                return "Recent"
+              } else if (Date.parse(row.sdate)>interval2.getTime()){
+                return "This Month"
+              } else return "Older"
+            }
+          },
+      }
+    },
+    resources() {
+      return [
+        {
+          name: "A",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 29 Jun 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "B",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 4 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "D",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 6 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "Dodo",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 15 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "C",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 17 May 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "Aforest.jpg",
+          path: "images/nature/forest.jpg",
+          preview: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
+          indicators: [],
+          type: "file",
+          sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "bob",
+              username: "bob",
+              displayName: "Bob",
+              avatar:
+                "https://images.unsplash.com/photo-1610216705422-caa3fcb6d158?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 1,
+        },
+        {
+          name: "ag.txt",
+          path: "/Documents/notes.txt",
+          icon: "text",
+          indicators: [],
+          type: "file",
+          sdate: "Mon, 11 Jan 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "einstein",
+              username: "einstein",
+              displayName: "Einstein",
+            },
+          ],
+          status: 0,
+        },
+        {
+          name: "H",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 07 Jun 2021 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+        {
+          name: "Hey",
+          path: "/Documents",
+          icon: "folder",
+          indicators: [],
+          type: "folder",
+          sdate: "Mon, 11 Jan 2020 14:34:04 GMT",
+          owner: [
+            {
+              id: "marie",
+              username: "marie",
+              displayName: "Marie",
+              avatar:
+                "https://images.unsplash.com/photo-1584308972272-9e4e7685e80f?ixid=MXwxMjA3fDB8MHxzZWFyY2h8Mzh8fGZhY2V8ZW58MHwyfDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+            },
+          ],
+          status: 2,
+        },
+      ]
+    },
+  },
+    methods: {
+
+      shareStatus(status) {
+        switch (status) {
+          case 0:
+            return "Accepted"
+          case 1:
+            return "Pending"
+          case 2:
+            return "Declined"
+        }
       }
     }
   }
