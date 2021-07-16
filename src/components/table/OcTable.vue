@@ -1,16 +1,18 @@
 <template>
   <div>
     <div>
-      <div class="grouping-settings">
+      <div>
         <div
           v-if="groupingSettings && groupingAllowed && groupingSettings.showGroupingOptions"
           class="oc-docs-width-small"
+          style="display: inline"
         >
           <label class="oc-mx-s">Group By:</label>
         </div>
         <div
           v-if="groupingSettings && groupingAllowed && groupingSettings.showGroupingOptions"
           class="oc-docs-width-medium"
+          style="display: inline-block; width: 250px"
         >
           <oc-select
             v-model="selected"
@@ -120,7 +122,7 @@
           @click.native="toggle(item, index)"
           ><oc-td style="colspan='2'"
             ><oc-avatar
-              v-if="selected === 'owner'"
+              v-if="selected === 'Share owner'"
               :width="30"
               style="
                  {
