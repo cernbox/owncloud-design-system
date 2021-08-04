@@ -2,11 +2,242 @@
 
 The following sections list the changes in ownCloud Design System unreleased.
 
-[unreleased]: https://github.com/owncloud/owncloud-design-system/compare/v7.5.0...master
+[unreleased]: https://github.com/owncloud/owncloud-design-system/compare/v8.3.1...master
+
+## Summary
+
+* Bugfix - Drag & Drop doesn't select files correctly: [#1560](https://github.com/owncloud/owncloud-design-system/issues/1560)
+* Change - Remove deprecated components: [#1545](https://github.com/owncloud/owncloud-design-system/pull/1545)
+* Change - Production Bundle Content: [#1553](https://github.com/owncloud/owncloud-design-system/pull/1553)
+* Enhancement - Add sign-out icon: [#5590](https://github.com/owncloud/web/issues/5590)
+* Enhancement - Added drag-drop property: [#5592](https://github.com/owncloud/web/issues/5592)
+
+## Details
+
+* Bugfix - Drag & Drop doesn't select files correctly: [#1560](https://github.com/owncloud/owncloud-design-system/issues/1560)
+
+   Due to refactoring there was a case where selecting files when dragging didn't work right. This
+   has been addressed and fixed now.
+
+   https://github.com/owncloud/owncloud-design-system/issues/1560
+   https://github.com/owncloud/owncloud-design-system/pull/1562
+
+
+* Change - Remove deprecated components: [#1545](https://github.com/owncloud/owncloud-design-system/pull/1545)
+
+   To focus on the quality of the currently relevant components and to reduce bundle size, we are
+   dropping a bunch of deprecated components from our design system.
+
+   List of removed components, for reference:
+
+   - OcActionDrop.vue - OcAppLayout.vue - OcAutocomplete.vue - OcDatepicker.vue -
+   OcDisclosureDrop.vue - OcNav.vue - OcNavItem.vue - OcNavbar.vue - OcTabItem.vue -
+   OcTabbed.vue - OcTabbedPanel.vue - OcTabbedTab.vue - OcTabs.vue - OcTopBar.vue -
+   OcUser.vue - _OcNavbarItem.vue - _OcSidebarNavDivider.vue - _OcSidebarNavHeader.vue -
+   _OcTopBarItem.vue - _OcTopBarLogo.vue
+
+   https://github.com/owncloud/owncloud-design-system/pull/1545
+
+
+* Change - Production Bundle Content: [#1553](https://github.com/owncloud/owncloud-design-system/pull/1553)
+
+   In the past, we shipped the docs `.scss` file and some example images which now have been removed
+   from the production bundle to reduce size.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1553
+
+
+* Enhancement - Add sign-out icon: [#5590](https://github.com/owncloud/web/issues/5590)
+
+   There has been confusion in user experience about the current usage of the `exit_to_app` icon
+   as sign-out icon. We have added a dedicated `sign-out` icon to avoid this in the future.
+
+   https://github.com/owncloud/web/issues/5590
+   https://github.com/owncloud/owncloud-design-system/pull/1551
+
+
+* Enhancement - Added drag-drop property: [#5592](https://github.com/owncloud/web/issues/5592)
+
+   In order to enable file moving via drag & drop we added the property drag-drop on OcTable and
+   OcTableFiles
+
+   https://github.com/owncloud/web/issues/5592
+   https://github.com/owncloud/owncloud-design-system/pull/1539
+
+# Changelog for [8.3.1] (2021-08-04)
+
+The following sections list the changes in ownCloud Design System 8.3.1.
+
+[8.3.1]: https://github.com/owncloud/owncloud-design-system/compare/v8.3.0...v8.3.1
+
+## Summary
+
+* Bugfix - Unnecessary context menu events: [#1564](https://github.com/owncloud/owncloud-design-system/pull/1564)
+
+## Details
+
+* Bugfix - Unnecessary context menu events: [#1564](https://github.com/owncloud/owncloud-design-system/pull/1564)
+
+   Clicking on the context menu in OcTableFiles was emitting unnecessary showDetails events.
+   This has been fixed.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1564
+
+# Changelog for [8.3.0] (2021-07-28)
+
+The following sections list the changes in ownCloud Design System 8.3.0.
+
+[8.3.0]: https://github.com/owncloud/owncloud-design-system/compare/v8.2.0...v8.3.0
+
+## Summary
+
+* Enhancement - Update vue select: [#1536](https://github.com/owncloud/owncloud-design-system/pull/1536)
+
+## Details
+
+* Enhancement - Update vue select: [#1536](https://github.com/owncloud/owncloud-design-system/pull/1536)
+
+   We've updated vue select to version 3.12.0
+
+   https://github.com/owncloud/owncloud-design-system/pull/1536
+
+# Changelog for [8.2.0] (2021-07-23)
+
+The following sections list the changes in ownCloud Design System 8.2.0.
+
+[8.2.0]: https://github.com/owncloud/owncloud-design-system/compare/v8.1.0...v8.2.0
+
+## Summary
+
+* Bugfix - Button as inline element: [#1529](https://github.com/owncloud/owncloud-design-system/pull/1529)
+* Bugfix - OcTableFiles Contextmenu ID: [#1525](https://github.com/owncloud/owncloud-design-system/pull/1525)
+* Enhancement - Deprecate OcAutocomplete: [#1521](https://github.com/owncloud/owncloud-design-system/pull/1521)
+* Enhancement - Add OcRecipient component: [#1521](https://github.com/owncloud/owncloud-design-system/pull/1521)
+* Enhancement - Add `search:input` event to OcSelect: [#1521](https://github.com/owncloud/owncloud-design-system/pull/1521)
+
+## Details
+
+* Bugfix - Button as inline element: [#1529](https://github.com/owncloud/owncloud-design-system/pull/1529)
+
+   We made our OcButton an inline-flex instead of a flex element, so that it behaves correctly
+   regarding alignment inside containers.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1529
+
+
+* Bugfix - OcTableFiles Contextmenu ID: [#1525](https://github.com/owncloud/owncloud-design-system/pull/1525)
+
+   Handling of `=`s in resource IDs in the OcTableFiles contextmenu was broken and lead to
+   undesired behavior. This has been fixed now.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1525
+   https://github.com/owncloud/owncloud-design-system/pull/1528
+
+
+* Enhancement - Deprecate OcAutocomplete: [#1521](https://github.com/owncloud/owncloud-design-system/pull/1521)
+
+   We've deprecated the OcAutocomplete component. OcSelect with `:multiple="true"` prop can
+   be used to achieve the same behaviour.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1521
+
+
+* Enhancement - Add OcRecipient component: [#1521](https://github.com/owncloud/owncloud-design-system/pull/1521)
+
+   We've added OcRecipient component.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1521
+
+
+* Enhancement - Add `search:input` event to OcSelect: [#1521](https://github.com/owncloud/owncloud-design-system/pull/1521)
+
+   We've added `search:input` event to the OcSelect component which is triggered when a search
+   query is typed into the select.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1521
+
+# Changelog for [8.1.0] (2021-07-22)
+
+The following sections list the changes in ownCloud Design System 8.1.0.
+
+[8.1.0]: https://github.com/owncloud/owncloud-design-system/compare/v8.0.0...v8.1.0
+
+## Summary
+
+* Bugfix - No hover on current breadcrumb item: [#1416](https://github.com/owncloud/owncloud-design-system/issues/1416)
+* Bugfix - Inverse button hover: [#1401](https://github.com/owncloud/owncloud-design-system/issues/1401)
+* Bugfix - OcSwitch Off State is not pixel perfect: [#1458](https://github.com/owncloud/owncloud-design-system/issues/1458)
+* Enhancement - OcSwitch off state color: [#1457](https://github.com/owncloud/owncloud-design-system/issues/1457)
+* Enhancement - OcTableFiles dropdown menu: [#1420](https://github.com/owncloud/owncloud-design-system/pull/1420)
+* Enhancement - OcTextarea configurable Enter/Linebreak: [#1422](https://github.com/owncloud/owncloud-design-system/issues/1422)
+
+## Details
+
+* Bugfix - No hover on current breadcrumb item: [#1416](https://github.com/owncloud/owncloud-design-system/issues/1416)
+
+   The current page's breadcrumb item is not interactive and shouldn't have a focus on hover, so we
+   removed it.
+
+   https://github.com/owncloud/owncloud-design-system/issues/1416
+   https://github.com/owncloud/owncloud-design-system/pull/1511
+
+
+* Bugfix - Inverse button hover: [#1401](https://github.com/owncloud/owncloud-design-system/issues/1401)
+
+   Icons inside inverse buttons were hidden on hover, which shouldn't happen anymore. Also added
+   an icon and some padding to the OcButton docs.
+
+   https://github.com/owncloud/owncloud-design-system/issues/1401
+   https://github.com/owncloud/owncloud-design-system/pull/1506
+
+
+* Bugfix - OcSwitch Off State is not pixel perfect: [#1458](https://github.com/owncloud/owncloud-design-system/issues/1458)
+
+   We've addressed the fact that the OcSwitch wasn't aligned properly in it's off state. Both
+   states are now aligned equaly.
+
+   https://github.com/owncloud/owncloud-design-system/issues/1458
+   https://github.com/owncloud/owncloud-design-system/pull/1512
+
+
+* Enhancement - OcSwitch off state color: [#1457](https://github.com/owncloud/owncloud-design-system/issues/1457)
+
+   We've addressed the fact that the OcSwitch 'off' state color doesn't differ enough from 'on'
+   state
+
+   https://github.com/owncloud/owncloud-design-system/issues/1457
+   https://github.com/owncloud/owncloud-design-system/pull/1522
+
+
+* Enhancement - OcTableFiles dropdown menu: [#1420](https://github.com/owncloud/owncloud-design-system/pull/1420)
+
+   The OcTableFiles component now has a slot that will be displayed inside an OcDrop upon either
+   right-clicking a table row or the three-dot button on the right end of the row.
+
+   https://github.com/owncloud/web/issues/5102
+   https://github.com/owncloud/web/issues/5103
+   https://github.com/owncloud/owncloud-design-system/pull/1420
+
+
+* Enhancement - OcTextarea configurable Enter/Linebreak: [#1422](https://github.com/owncloud/owncloud-design-system/issues/1422)
+
+   OcTextArea has now an property 'submitOnEnter'. This prop controls how the textarea should
+   react to ENTER.
+
+   https://github.com/owncloud/owncloud-design-system/issues/1422
+   https://github.com/owncloud/owncloud-design-system/pull/1517
+
+# Changelog for [8.0.0] (2021-07-08)
+
+The following sections list the changes in ownCloud Design System 8.0.0.
+
+[8.0.0]: https://github.com/owncloud/owncloud-design-system/compare/v7.5.0...v8.0.0
 
 ## Summary
 
 * Change - Rename previews to thumbnails: [#1429](https://github.com/owncloud/owncloud-design-system/pull/1429)
+* Change - Remove custom model from OcSelect: [#1478](https://github.com/owncloud/owncloud-design-system/pull/1478)
+* Enhancement - Add page size component: [#1478](https://github.com/owncloud/owncloud-design-system/pull/1478)
 * Enhancement - Initial focus in OcModal: [#1453](https://github.com/owncloud/owncloud-design-system/pull/1453)
 * Enhancement - Table Sorting by String or Function: [#1377](https://github.com/owncloud/owncloud-design-system/pull/1377)
 
@@ -20,6 +251,22 @@ The following sections list the changes in ownCloud Design System unreleased.
    `thumbnails` to avoid naming conflicts down the road.
 
    https://github.com/owncloud/owncloud-design-system/pull/1429
+
+
+* Change - Remove custom model from OcSelect: [#1478](https://github.com/owncloud/owncloud-design-system/pull/1478)
+
+   We've removed the custom model defined in OcSelect component. It is no longer possible to pass
+   the value via `model` prop. You can use `value` instead. `v-model` is still available.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1478
+
+
+* Enhancement - Add page size component: [#1478](https://github.com/owncloud/owncloud-design-system/pull/1478)
+
+   We've added page size component. This component can be used for specifying the pagination
+   limit of items per page.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1478
 
 
 * Enhancement - Initial focus in OcModal: [#1453](https://github.com/owncloud/owncloud-design-system/pull/1453)
@@ -685,7 +932,7 @@ The following sections list the changes in ownCloud Design System 6.2.0.
 
 The following sections list the changes in ownCloud Design System 6.1.0.
 
-[6.1.0]: https://github.com/owncloud/owncloud-design-system/compare/v6.0.1...v6.1.0
+[6.1.0]: https://github.com/owncloud/owncloud-design-system/compare/v6.0.0...v6.1.0
 
 ## Summary
 
@@ -740,31 +987,11 @@ The following sections list the changes in ownCloud Design System 6.1.0.
 
    https://github.com/owncloud/owncloud-design-system/pull/1231
 
-# Changelog for [6.0.1] (2021-04-19)
-
-The following sections list the changes in ownCloud Design System 6.0.1.
-
-[6.0.1]: https://github.com/owncloud/owncloud-design-system/compare/v6.0.0...v6.0.1
-
-## Summary
-
-* Bugfix - Swap background colors: [#1227](https://github.com/owncloud/owncloud-design-system/pull/1227)
-
-## Details
-
-* Bugfix - Swap background colors: [#1227](https://github.com/owncloud/owncloud-design-system/pull/1227)
-
-   In the `v6.0.0` release, the color values for `background-muted` and
-   `background-hightlighted` got swapped by accident. This produced unwanted results in the
-   results and gets reverted to the original and working version with this change.
-
-   https://github.com/owncloud/owncloud-design-system/pull/1227
-
 # Changelog for [6.0.0] (2021-04-19)
 
 The following sections list the changes in ownCloud Design System 6.0.0.
 
-[6.0.0]: https://github.com/owncloud/owncloud-design-system/compare/v5.1.0...v6.0.0
+[6.0.0]: https://github.com/owncloud/owncloud-design-system/compare/v6.0.1...v6.0.0
 
 ## Summary
 
@@ -802,11 +1029,31 @@ The following sections list the changes in ownCloud Design System 6.0.0.
 
    https://github.com/owncloud/owncloud-design-system/pull/1219
 
+# Changelog for [6.0.1] (2021-04-19)
+
+The following sections list the changes in ownCloud Design System 6.0.1.
+
+[6.0.1]: https://github.com/owncloud/owncloud-design-system/compare/v5.1.0...v6.0.1
+
+## Summary
+
+* Bugfix - Swap background colors: [#1227](https://github.com/owncloud/owncloud-design-system/pull/1227)
+
+## Details
+
+* Bugfix - Swap background colors: [#1227](https://github.com/owncloud/owncloud-design-system/pull/1227)
+
+   In the `v6.0.0` release, the color values for `background-muted` and
+   `background-hightlighted` got swapped by accident. This produced unwanted results in the
+   results and gets reverted to the original and working version with this change.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1227
+
 # Changelog for [5.1.0] (2021-04-15)
 
 The following sections list the changes in ownCloud Design System 5.1.0.
 
-[5.1.0]: https://github.com/owncloud/owncloud-design-system/compare/v5.0.0...v5.1.0
+[5.1.0]: https://github.com/owncloud/owncloud-design-system/compare/v5.0.1...v5.1.0
 
 ## Summary
 
@@ -859,11 +1106,30 @@ The following sections list the changes in ownCloud Design System 5.1.0.
 
    https://github.com/owncloud/owncloud-design-system/pull/1213
 
+# Changelog for [5.0.1] (2021-04-08)
+
+The following sections list the changes in ownCloud Design System 5.0.1.
+
+[5.0.1]: https://github.com/owncloud/owncloud-design-system/compare/v5.0.0...v5.0.1
+
+## Summary
+
+* Bugfix - Add missing peerDependency: [#1205](https://github.com/owncloud/owncloud-design-system/pull/1205)
+
+## Details
+
+* Bugfix - Add missing peerDependency: [#1205](https://github.com/owncloud/owncloud-design-system/pull/1205)
+
+   In the 5.0.0 release, we missed to add the dependency for `vue-inline-svg` to the
+   peerDependencies.
+
+   https://github.com/owncloud/owncloud-design-system/pull/1205
+
 # Changelog for [5.0.0] (2021-04-08)
 
 The following sections list the changes in ownCloud Design System 5.0.0.
 
-[5.0.0]: https://github.com/owncloud/owncloud-design-system/compare/v5.0.1...v5.0.0
+[5.0.0]: https://github.com/owncloud/owncloud-design-system/compare/v4.3.0...v5.0.0
 
 ## Summary
 
@@ -891,25 +1157,6 @@ The following sections list the changes in ownCloud Design System 5.0.0.
    copied into the `dist` folder and can be imported and used alongside the styles and components.
 
    https://github.com/owncloud/owncloud-design-system/pull/1201
-
-# Changelog for [5.0.1] (2021-04-08)
-
-The following sections list the changes in ownCloud Design System 5.0.1.
-
-[5.0.1]: https://github.com/owncloud/owncloud-design-system/compare/v4.3.0...v5.0.1
-
-## Summary
-
-* Bugfix - Add missing peerDependency: [#1205](https://github.com/owncloud/owncloud-design-system/pull/1205)
-
-## Details
-
-* Bugfix - Add missing peerDependency: [#1205](https://github.com/owncloud/owncloud-design-system/pull/1205)
-
-   In the 5.0.0 release, we missed to add the dependency for `vue-inline-svg` to the
-   peerDependencies.
-
-   https://github.com/owncloud/owncloud-design-system/pull/1205
 
 # Changelog for [4.3.0] (2021-04-07)
 

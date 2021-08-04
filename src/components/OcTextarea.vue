@@ -47,7 +47,7 @@ import uniqueId from "../utils/uniqueId"
  */
 export default {
   name: "OcTextarea",
-  status: "review",
+  status: "ready",
   release: "1.0.0",
   props: {
     /**
@@ -101,6 +101,16 @@ export default {
     fixMessageLine: {
       type: Boolean,
       default: false,
+    },
+    /**
+     * Configure if the value should be emitted on 'enter' or if it should do a linebreak
+     * if true: 'enter' emits value, ctrl + enter and shift + enter creates linebreak
+     * if false: 'enter' creates linebreak
+     */
+    submitOnEnter: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   computed: {
@@ -158,9 +168,11 @@ export default {
       this.$emit("focus", value)
     },
     onKeyDown(e) {
-      if (e.keyCode === 13) {
+      const enterKey = e.key === "Enter"
+      if (this.submitOnEnter && enterKey && !e.ctrlKey && !e.shiftKey) {
         /**
-         * Change event - emitted as soon as the user hits enter
+         * Change event - emitted as soon as the user hits enter (without ctrl or shift)
+         * Only applies if submitOnEnter is set to true
          * @type {string}
          */
         this.$emit("change", e.target.value)

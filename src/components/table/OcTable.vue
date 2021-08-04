@@ -22,7 +22,7 @@
           />
         </div>
       </div>
-      <br />
+      <br >
     </div>
     <table v-bind="extractTableProps()">
       <oc-thead v-if="hasHeader">
@@ -63,19 +63,31 @@
           :key="`oc-tbody-tr-${item[idKey] || trIndex}`"
           :ref="`row-${trIndex}`"
           v-bind="extractTbodyTrProps(item, trIndex)"
+          :data-file-id="item.id"
+          :draggable="dragDrop"
           @click.native="$emit(constants.EVENT_TROW_CLICKED, item)"
+          @contextmenu.native="
+            $emit(constants.EVENT_TROW_CONTEXTMENU, $refs[`row-${trIndex}`][0], $event)
+          "
           @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
+          @dragstart.native.stop="dragStart(item)"
+          @drop.native.stop="dropRowEvent"
+          @dragenter.native.prevent.stop
+          @dragover.native.prevent.stop
         >
           <oc-td
             v-for="(field, tdIndex) in fields"
             :key="'oc-tbody-td-' + cellKey(field, tdIndex, item)"
             v-bind="extractTdProps(field, tdIndex)"
           >
-            <slot v-if="isFieldTypeSlot(field)" :name="field.name" :item="item" />
+            <slot v-if="isFieldTypeSlot(field)"
+:name="field.name" :item="item" />
             <template v-else-if="isFieldTypeCallback(field)">
               {{ field.callback(item[field.name]) }}
             </template>
-            <template v-else>{{ item[field.name] }}</template>
+            <template v-else>
+              {{ item[field.name] }}
+            </template>
           </oc-td>
         </oc-tr>
       </oc-tbody>
@@ -95,8 +107,9 @@
           "
           :class="['oc-tbody-tr', 'oc-tbody-tr-accordion']"
           @click.native="toggle(item, index)"
-          ><oc-td style="colspan='2'"
-            ><oc-avatar
+        >
+          <oc-td style="colspan='2'">
+            <oc-avatar
               v-if="selected === 'Share owner'"
               :width="30"
               style="
@@ -107,8 +120,10 @@
               "
               :user-name="item.name"
               :src="item.data[0].owner[0].avatar"
-              accessible-label="item.name" /></oc-td
-          ><oc-td :colspan="fields.length - 2"> {{ item.name }} </oc-td
+              accessible-label="item.name"
+            />
+</oc-td><oc-td :colspan="fields.length - 2">
+{{ item.name }} </oc-td
           ><oc-td>
             <span
               class="oc-ml-xs oc-icon-l"
@@ -130,8 +145,10 @@
                 class="oc-accordion-title-arrow-icon"
                 :class="{ rotate: resultArray[index].open }"
                 size="large"
-              /> </span></oc-td
-        ></oc-tr>
+              />
+            </span>
+          </oc-td>
+        </oc-tr>
         <template v-if="resultArray[index].open">
           <oc-tr
             v-for="(item, trIndex) in item.data"
@@ -146,11 +163,14 @@
               :key="'oc-tbody-td-' + cellKey(field, tdIndex, item)"
               v-bind="extractTdProps(field, tdIndex)"
             >
-              <slot v-if="isFieldTypeSlot(field)" :name="field.name" :item="item" />
+              <slot v-if="isFieldTypeSlot(field)"
+:name="field.name" :item="item" />
               <template v-else-if="isFieldTypeCallback(field)">
                 {{ field.callback(item[field.name]) }}
               </template>
-              <template v-else>{{ item[field.name] }}</template>
+              <template v-else>
+                {{ item[field.name] }}
+              </template>
             </oc-td>
           </oc-tr>
         </template>
@@ -182,8 +202,11 @@
                 text-align: center;
               }
             "
-            ><div class="preview-heading">Show more</div> </oc-td
-          ><oc-td
+          >
+            <div class="preview-heading">
+Show more
+</div>
+</oc-td><oc-td
             v-else
             key="showLess"
             :colspan="fields.length"
@@ -192,14 +215,19 @@
                 text-align: center;
               }
             "
-            ><div class="preview-heading">Show less</div>
+          >
+            <div class="preview-heading">
+Show less
+</div>
           </oc-td>
         </oc-tr>
       </tbody>
 
-      <tfoot v-if="$slots.footer" class="oc-table-footer">
+      <tfoot v-if="$slots.footer"
+class="oc-table-footer">
         <tr>
-          <td :colspan="footerColspan" class="oc-table-footer-cell">
+          <td :colspan="footerColspan"
+class="oc-table-footer-cell">
             <!-- @slot Footer of the table -->
             <slot name="footer" />
           </td>
@@ -220,14 +248,21 @@ import SortMixin from "./mixins/sort"
 import { getSizeClass } from "../../utils/sizeClasses"
 import OcSelect from "../OcSelect.vue"
 
-import { EVENT_THEAD_CLICKED, EVENT_TROW_CLICKED, EVENT_TROW_MOUNTED } from "./helpers/constants"
+import {
+  EVENT_THEAD_CLICKED,
+  EVENT_TROW_CLICKED,
+  EVENT_TROW_MOUNTED,
+  EVENT_TROW_CONTEXTMENU,
+  EVENT_FILE_DROPPED,
+  EVENT_FILE_DRAGGED,
+} from "./helpers/constants"
 
 /**
  * A table component with dynamic layout and data.
  */
 export default {
   name: "OcTable",
-  status: "review",
+  status: "ready",
   release: "2.1.0",
   components: {
     OcThead,
@@ -344,6 +379,14 @@ export default {
       default: "small",
       validator: size => /(xsmall|small|medium|large|xlarge)/.test(size),
     },
+    /**
+     * Enable Drag & Drop events
+     */
+    dragDrop: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -364,6 +407,7 @@ export default {
         EVENT_THEAD_CLICKED,
         EVENT_TROW_CLICKED,
         EVENT_TROW_MOUNTED,
+        EVENT_TROW_CONTEXTMENU,
       },
     }
   },
@@ -486,6 +530,17 @@ export default {
     },
 
     ///
+    dragStart(file) {
+      if (!this.dragDrop) return
+      this.$emit(EVENT_FILE_DRAGGED, file)
+    },
+    dropRowEvent(event) {
+      if (!this.dragDrop) return
+      const dropTarget = event.target
+      const dropTargetTr = dropTarget.closest("tr")
+      const dropFileId = dropTargetTr.dataset.fileId
+      this.$emit(EVENT_FILE_DROPPED, dropFileId)
+    },
     isFieldTypeSlot(field) {
       return field.type === "slot"
     },

@@ -10,7 +10,7 @@
         :aria-label="indicator.label"
         :aria-describedby="getIndicatorDescriptionId(indicator)"
         appearance="raw"
-        :data-test-id="indicator.id"
+        :data-testid="indicator.id"
         :data-test-indicator-type="indicator.type"
         @click.stop="indicator.handler(resource, indicator.target)"
       >
@@ -26,7 +26,7 @@
         :name="indicator.icon"
         :accessible-label="indicator.label"
         :aria-describedby="getIndicatorDescriptionId(indicator)"
-        :data-test-id="indicator.id"
+        :data-testid="indicator.id"
         :data-test-indicator-type="indicator.type"
       />
       <p
@@ -50,7 +50,7 @@ import uniqueId from "../utils/uniqueId"
  */
 export default {
   name: "OcStatusIndicators",
-  status: "review",
+  status: "ready",
   release: "2.0.1",
 
   components: { OcIcon, OcButton },

@@ -70,7 +70,7 @@ import OcIcon from "./OcIcon.vue"
  */
 export default {
   name: "OcBreadcrumb",
-  status: "review",
+  status: "ready",
   release: "1.0.0",
 
   components: {
@@ -143,7 +143,7 @@ export default {
     }
 
     > li a:hover,
-    > li span:hover,
+    > li span:not([aria-current="page"]):hover,
     > li button:hover {
       color: var(--oc-color-swatch-primary-default);
     }

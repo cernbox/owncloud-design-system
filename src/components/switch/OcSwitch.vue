@@ -2,7 +2,7 @@
   <span :key="`oc-switch-${checked.toString()}`" class="oc-switch">
     <span :id="labelId" v-text="label" />
     <button
-      data-test-id="oc-switch-btn"
+      data-testid="oc-switch-btn"
       class="oc-switch-btn"
       role="switch"
       :aria-checked="checked.toString()"
@@ -20,7 +20,7 @@ import uniqueId from "../../utils/uniqueId"
  */
 export default {
   name: "OcSwitch",
-  status: "review",
+  status: "ready",
   release: "1.0.0",
   model: {
     prop: "checked",
@@ -80,30 +80,31 @@ export default {
     border-radius: 20px;
     cursor: pointer;
     display: block;
-    height: $form-radio-size;
+    height: 16px;
     margin: 0;
     padding: 0;
     position: relative;
     transition: background-color 0.25s;
-    width: $form-radio-size * 1.75;
+    width: 29px;
 
     &::before {
-      background-color: var(--oc-color-text-inverse);
+      background-color: var(--oc-color-swatch-inverse-default);
       border-radius: 50%;
       content: "";
-      height: $form-radio-size - 4;
+      height: 12px;
       left: 1px;
       position: absolute;
       top: 2px;
       transition: transform 0.25s;
-      width: $form-radio-size - 4;
+      width: 12px;
     }
 
     &[aria-checked="false"] {
-      background-color: var(--oc-color-text-muted);
+      background-color: var(--oc-color-swatch-inverse-muted);
 
       &::before {
         transform: translateX(0);
+        left: 2px;
       }
     }
 
@@ -112,6 +113,7 @@ export default {
 
       &::before {
         transform: translateX(calc(100% + 1px));
+        left: 1px;
       }
     }
   }

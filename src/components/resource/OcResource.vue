@@ -69,7 +69,7 @@ import uniqueId from "../../utils/uniqueId"
  */
 export default {
   name: "OcResource",
-  status: "review",
+  status: "ready",
   release: "2.1.0",
   components: { OcButton, OcImg, OcStatusIndicators, OcIcon, OcResourceName },
   props: {

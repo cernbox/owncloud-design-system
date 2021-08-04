@@ -18,7 +18,7 @@ import { getSizeClass } from "../utils/sizeClasses"
 
 export default {
   name: "OcButton",
-  status: "review",
+  status: "ready",
   release: "1.0.0",
   props: {
     /**
@@ -280,7 +280,7 @@ export default {
   border-radius: 3px;
   box-sizing: border-box;
   color: var(--oc-color-text-inverse);
-  display: flex;
+  display: inline-flex;
   font-weight: 600;
   padding: 0.5rem 0.75rem;
   text-align: center;
@@ -409,11 +409,27 @@ export default {
       var(--oc-color-swatch-inverse-muted)
     );
 
-    color: var(--oc-color-swatch-brand-default);
+    &:not([disabled]) {
+      color: var(--oc-color-swatch-brand-default);
+      .oc-icon-passive > svg {
+        fill: var(--oc-color-swatch-brand-default);
+      }
+    }
+
+    &-outline:not([disabled]),
+    &-raw:not([disabled]) {
+      color: var(--oc-color-swatch-inverse-default);
+      .oc-icon-passive > svg {
+        fill: var(--oc-color-swatch-inverse-default);
+      }
+    }
 
     &-outline:hover:not([disabled]),
     &-outline:focus:not([disabled]) {
-      color: var(--oc-color-text-default);
+      color: var(--oc-color-swatch-brand-default);
+      .oc-icon-passive > svg {
+        fill: var(--oc-color-swatch-brand-default);
+      }
     }
   }
 
@@ -553,12 +569,14 @@ Every button has to have an accessible name. It cannot be provided by a text bet
       <oc-td>
         {{ variation.description }}
       </oc-td>
-        <oc-td v-for="appearance in appearances" :class="{ 'oc-background-brand': variation.title === 'inverse' }">
+        <oc-td v-for="appearance in appearances" :class="{ 'oc-background-brand': variation.title === 'inverse' }" class="oc-p-m">
           <oc-button :variation="variation.title" :appearance="appearance" class="oc-mb-s">
             {{ variation.title }}
+            <oc-icon name="home" />
           </oc-button>
           <oc-button :variation="variation.title" :appearance="appearance" disabled>
             {{ variation.title }}
+            <oc-icon name="home" />
           </oc-button>
         </oc-td>
       </oc-tr>

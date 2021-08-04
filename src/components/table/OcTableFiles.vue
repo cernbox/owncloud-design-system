@@ -7,8 +7,12 @@
     :disabled="disabled"
     :sticky="true"
     :header-position="headerPosition"
+    :drag-drop="dragDrop"
     @highlight="showDetails"
     @rowMounted="rowMounted"
+    @contextmenuClicked="showContextMenu"
+    @fileDropped="fileDropped"
+    @fileDragged="fileDragged"
   >
     <template #selectHeader>
       <div class="oc-table-files-select-all">
@@ -71,17 +75,38 @@
     </template>
     <template #actions="{ item }">
       <div class="oc-table-files-actions">
-        <!-- @slot Add quick actions directly next to the `showDetails` button in the actions column -->
-        <slot name="quickActions" :resource="item" />
         <oc-button
           :aria-label="$gettext('Show details')"
           class="oc-table-files-btn-show-details"
-          variation="passive"
           appearance="raw"
           @click="showDetails(item)"
         >
+          <oc-icon name="info_outline" />
+        </oc-button>
+        <!-- @slot Add quick actions directly next to the `showDetails` button in the actions column -->
+        <slot name="quickActions" :resource="item" />
+        <oc-button
+          :id="`context-menu-trigger-${item.id.replace(/=+/, '')}`"
+          :aria-label="$gettext('Show context menu')"
+          class="oc-table-files-btn-action-dropdown"
+          appearance="raw"
+          @click.stop.prevent="
+            resetDropPosition(`context-menu-drop-ref-${item.id.replace(/=+/, '')}`, $event)
+          "
+        >
           <oc-icon name="more_vert" />
         </oc-button>
+        <oc-drop
+          :ref="`context-menu-drop-ref-${item.id.replace(/=+/, '')}`"
+          :drop-id="`context-menu-drop-${item.id.replace(/=+/, '')}`"
+          :toggle="`#context-menu-trigger-${item.id.replace(/=+/, '')}`"
+          mode="click"
+          close-on-click
+          @click.native.stop.prevent
+        >
+          <!-- @slot Add context actions that open in a dropdown when clicking on the "three dots" button -->
+          <slot name="contextMenu" :resource="item" />
+        </oc-drop>
       </div>
     </template>
     <template v-if="$slots.footer" #footer>
@@ -101,13 +126,23 @@ import OcAvatarGroup from "../avatars/OcAvatarGroup.vue"
 import OcCheckbox from "../OcCheckbox.vue"
 import OcButton from "../OcButton.vue"
 import OcResourceSize from "../resource/OcResourceSize.vue"
-import { EVENT_TROW_MOUNTED } from "./helpers/constants"
+import OcDrop from "../OcDrop.vue"
+import { EVENT_TROW_MOUNTED, EVENT_FILE_DROPPED } from "./helpers/constants"
 
 export default {
   name: "OcTableFiles",
-  status: "review",
+  status: "ready",
   release: "2.1.0",
-  components: { OcTable, OcResource, OcIcon, OcAvatarGroup, OcCheckbox, OcButton, OcResourceSize },
+  components: {
+    OcTable,
+    OcResource,
+    OcIcon,
+    OcAvatarGroup,
+    OcCheckbox,
+    OcButton,
+    OcResourceSize,
+    OcDrop,
+  },
   model: {
     prop: "selection",
     event: "select",
@@ -232,12 +267,21 @@ export default {
       default: "small",
       validator: size => /(xsmall|small|medium|large|xlarge)/.test(size),
     },
+    /**
+     * Enable Drag & Drop events
+     */
+    dragDrop: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       constants: {
         EVENT_TROW_MOUNTED,
       },
+      selectedResources: [],
     }
   },
   computed: {
@@ -346,6 +390,48 @@ export default {
     },
   },
   methods: {
+    fileDragged(file) {
+      const selectedResourceInResources = this.selectedResources.some(e => e.id === file.id)
+      if (!selectedResourceInResources) {
+        this.selectedResources.push(file)
+      }
+      this.$emit("select", this.selectedResources)
+    },
+    fileDropped(fileId) {
+      this.$emit(EVENT_FILE_DROPPED, fileId)
+    },
+    resetDropPosition(id, event) {
+      const instance = this.$refs[id].tippy
+      if (instance === undefined) {
+        return
+      }
+      this.displayPositionedDropdown(instance, event)
+    },
+
+    showContextMenu(rows, event) {
+      event.preventDefault()
+
+      const instance = rows.$el.getElementsByClassName("oc-table-files-btn-action-dropdown")[0]
+      if (instance === undefined) {
+        return
+      }
+      this.displayPositionedDropdown(instance._tippy, event)
+    },
+
+    displayPositionedDropdown(dropdown, event) {
+      dropdown.setProps({
+        getReferenceClientRect: () => ({
+          width: 0,
+          height: 0,
+          top: event.clientY,
+          bottom: event.clientY,
+          left: event.clientX,
+          right: event.clientX,
+        }),
+      })
+      dropdown.show()
+    },
+
     rowMounted(resource, component) {
       /**
        * Triggered whenever a row is mounted
@@ -372,6 +458,7 @@ export default {
        * Triggered when a checkbox for selecting a resource or the checkbox for selecting all resources is clicked
        * @property {array} resources The selected resources
        */
+      this.selectedResources = resources
       this.$emit("select", resources)
     },
 
@@ -482,7 +569,7 @@ export default {
 <template>
   <div>
     <oc-table-files :resources="resources" :highlighted="highlighted" disabled="notes" v-model="selected" class="oc-mb"
-                    @showDetails="highlightResource" @action="handleAction">
+                    @showDetails="highlightResource" @action="handleAction" @fileDropped="fileDropped" :drag-drop="true">
       <template v-slot:quickActions="props">
         <oc-button @click.stop variation="passive" appearance="raw" aria-label="Share with other people">
           <oc-icon name="group-add" />
@@ -490,6 +577,9 @@ export default {
         <oc-button @click.stop variation="passive" appearance="raw" aria-label="Create a public link">
           <oc-icon name="link-add" />
         </oc-button>
+      </template>
+      <template v-slot:contextMenu="props">
+        <p>Action Dropdown Placeholder</p>
       </template>
       <template #footer>
         {{ resources.length }} resources
@@ -563,6 +653,10 @@ export default {
       }
     },
     methods: {
+      fileDropped(fileId) {
+        const selectedString = this.selectedIds.join(`, `)
+        alert(selectedString + ` -> ` + fileId);
+      },
       highlightResource(resource) {
         this.highlighted = resource.id
       },
@@ -591,6 +685,7 @@ export default {
       resources() {
         return [
           {
+            id: "example1-forest",
             name: "forest.jpg",
             path: "images/nature/forest.jpg",
             thumbnail: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
@@ -600,6 +695,7 @@ export default {
             sharedWith: this.sharedWith
           },
           {
+            id: "example1-notes",
             name: "notes.txt",
             path: "/Documents/notes.txt",
             icon: "text",
@@ -609,6 +705,7 @@ export default {
             sharedWith: this.sharedWithOverlapping
           },
           {
+            id: "example1-Documents",
             name: "Documents",
             path: "/Documents",
             icon: "folder",
@@ -717,6 +814,7 @@ export default {
       resources() {
         return [
           {
+            id: "example3-forest",
             name: "forest.jpg",
             path: "images/nature/forest.jpg",
             thumbnail: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
@@ -732,6 +830,7 @@ export default {
             status: 1
           },
           {
+            id: "example3-notes",
             name: "notes.txt",
             path: "/Documents/notes.txt",
             icon: "text",
@@ -746,6 +845,7 @@ export default {
             status: 0
           },
           {
+            id: "example3-documents",
             name: "Documents",
             path: "/Documents",
             icon: "folder",
@@ -793,6 +893,7 @@ export default {
       resources() {
         return [
           {
+            id: "example4-forest",
             name: "forest.jpg",
             path: "images/nature/forest.jpg",
             icon: "image",
@@ -801,6 +902,7 @@ export default {
             ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
           },
           {
+            id: "example4-notes",
             name: "notes.txt",
             path: "/Documents/notes.txt",
             icon: "text",
@@ -809,6 +911,7 @@ export default {
             ddate: "Mon, 11 Jan 2021 14:34:04 GMT"
           },
           {
+            id: "example4-documents",
             name: "Documents",
             path: "/Documents",
             icon: "folder",
