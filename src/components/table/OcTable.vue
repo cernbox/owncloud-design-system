@@ -163,8 +163,17 @@
             :key="`oc-tbody-tr-${item[idKey] || trIndex}`"
             :ref="`row-${trIndex}`"
             v-bind="extractTbodyTrProps(item, trIndex)"
+            :data-file-id="item.id"
+            :draggable="dragDrop"
             @click.native="$emit(constants.EVENT_TROW_CLICKED, item)"
+            @contextmenu.native="
+              $emit(constants.EVENT_TROW_CONTEXTMENU, $refs[`row-${trIndex}`][0], $event)
+            "
             @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
+            @dragstart.native.stop="dragStart(item)"
+            @drop.native.stop="dropRowEvent"
+            @dragenter.native.prevent.stop
+            @dragover.native.prevent.stop
           >
             <oc-td
               v-for="(field, tdIndex) in fields"
