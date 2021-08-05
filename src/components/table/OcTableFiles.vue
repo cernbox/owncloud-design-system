@@ -990,6 +990,7 @@ export default {
 ```js
 <template>
   <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected" :groupingSettings="groupingSettings">
+
   </oc-table-files>
 </template>
 <script>
