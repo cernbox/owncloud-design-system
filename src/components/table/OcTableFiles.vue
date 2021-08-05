@@ -990,27 +990,6 @@ export default {
 ```js
 <template>
   <oc-table-files :resources="resources" :arePathsDisplayed="true" v-model="selected" :groupingSettings="groupingSettings">
-    <template v-slot:status="props">
-      <div class="uk-flex uk-flex-right" style="align-items: baseline;">
-        <oc-button
-          v-if="props.resource.status === 1 || props.resource.status === 2"
-          appearance="raw"
-          variation="primary"
-          class="oc-mr-xs"
-          v-text="'Accept'"
-        />
-        <oc-button
-          v-if="props.resource.status === 1 || props.resource.status === 0"
-          appearance="raw"
-          variation="primary"
-          class="oc-mr-xs"
-          v-text="'Decline'"
-        />
-        <span
-          v-text="shareStatus(props.resource.status)"
-        />
-      </div>
-    </template>
   </oc-table-files>
 </template>
 <script>
@@ -1050,6 +1029,7 @@ export default {
     resources() {
       return [
         {
+          id: "A",
           name: "A",
           path: "/Documents",
           icon: "folder",
@@ -1067,7 +1047,7 @@ export default {
           ],
           status: 2,
         },
-        {
+        {id: "B",
           name: "B",
           path: "/Documents",
           icon: "folder",
@@ -1085,7 +1065,7 @@ export default {
           ],
           status: 2,
         },
-        {
+        {id: "D",
           name: "D",
           path: "/Documents",
           icon: "folder",
@@ -1103,7 +1083,7 @@ export default {
           ],
           status: 2,
         },
-        {
+        {id: "Dodo",
           name: "Dodo",
           path: "/Documents",
           icon: "folder",
@@ -1121,7 +1101,7 @@ export default {
           ],
           status: 2,
         },
-        {
+        {id: "C",
           name: "C",
           path: "/Documents",
           icon: "folder",
@@ -1139,7 +1119,7 @@ export default {
           ],
           status: 2,
         },
-        {
+        {id: "Aforest.jpg",
           name: "Aforest.jpg",
           path: "images/nature/forest.jpg",
           preview: "https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_960_720.jpg",
@@ -1157,7 +1137,7 @@ export default {
           ],
           status: 1,
         },
-        {
+        {id: "ag.txt",
           name: "ag.txt",
           path: "/Documents/notes.txt",
           icon: "text",
@@ -1173,7 +1153,7 @@ export default {
           ],
           status: 0,
         },
-        {
+        {id: "H",
           name: "H",
           path: "/Documents",
           icon: "folder",
@@ -1191,7 +1171,7 @@ export default {
           ],
           status: 2,
         },
-        {
+        {id: "Hey",
           name: "Hey",
           path: "/Documents",
           icon: "folder",
