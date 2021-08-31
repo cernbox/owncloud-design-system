@@ -20,30 +20,6 @@
             :clearable="false"
             :searchable="false"
           />
-<<<<<<< HEAD
-        </oc-th>
-      </oc-tr>
-    </oc-thead>
-    <oc-tbody>
-      <oc-tr
-        v-for="(item, trIndex) in tableData"
-        :key="`oc-tbody-tr-${item[idKey] || trIndex}`"
-        :ref="`row-${trIndex}`"
-        v-bind="extractTbodyTrProps(item, trIndex)"
-        :data-file-id="item.id"
-        :draggable="dragDrop"
-        @click.native="$emit(constants.EVENT_TROW_CLICKED, item)"
-        @contextmenu.native="
-          $emit(constants.EVENT_TROW_CONTEXTMENU, $refs[`row-${trIndex}`][0], $event, item)
-        "
-        @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
-        @dragstart.native.stop="dragStart(item)"
-        @drop.native.stop="dropRowEvent"
-        @dragenter.native.prevent.stop="dropRowStyling(item.id, false, $event)"
-        @dragleave.native.prevent.stop="dropRowStyling(item.id, true, $event)"
-        @mouseleave="dropRowStyling(item.id, true, $event)"
-        @dragover.native.prevent.stop
-=======
         </div>
       </div>
       <br />
@@ -87,8 +63,19 @@
           :key="`oc-tbody-tr-${item[idKey] || trIndex}`"
           :ref="`row-${trIndex}`"
           v-bind="extractTbodyTrProps(item, trIndex)"
+          :data-file-id="item.id"
+          :draggable="dragDrop"
           @click.native="$emit(constants.EVENT_TROW_CLICKED, item)"
+          @contextmenu.native="
+            $emit(constants.EVENT_TROW_CONTEXTMENU, $refs[`row-${trIndex}`][0], $event)
+          "
           @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
+          @dragstart.native.stop="dragStart(item)"
+          @drop.native.stop="dropRowEvent"
+          @dragenter.native.prevent.stop="dropRowStyling(item.id, false, $event)"
+          @dragleave.native.prevent.stop="dropRowStyling(item.id, true, $event)"
+          @mouseleave="dropRowStyling(item.id, true, $event)"
+          @dragover.native.prevent.stop
         >
           <oc-td
             v-for="(field, tdIndex) in fields"
@@ -110,7 +97,6 @@
         v-for="(item, index) in groupedItems"
         v-else-if="groupingAllowed && selected !== 'None'"
         :key="`${item.name + index}`"
->>>>>>> Advanced table options
       >
         <oc-tr
           style="
@@ -172,7 +158,9 @@
             @hook:mounted="$emit(constants.EVENT_TROW_MOUNTED, item, $refs[`row-${trIndex}`][0])"
             @dragstart.native.stop="dragStart(item)"
             @drop.native.stop="dropRowEvent"
-            @dragenter.native.prevent.stop
+            @dragenter.native.prevent.stop="dropRowStyling(item.id, false, $event)"
+            @dragleave.native.prevent.stop="dropRowStyling(item.id, true, $event)"
+            @mouseleave="dropRowStyling(item.id, true, $event)"
             @dragover.native.prevent.stop
           >
             <oc-td
@@ -480,28 +468,6 @@ export default {
     },
   },
   methods: {
-<<<<<<< HEAD
-    dragStart(file) {
-      if (!this.dragDrop) return
-      this.$emit(EVENT_FILE_DRAGGED, file)
-    },
-    dropRowEvent(event) {
-      if (!this.dragDrop) return
-      const dropTarget = event.target
-      const dropTargetTr = dropTarget.closest("tr")
-      const dropFileId = dropTargetTr.dataset.fileId
-      this.$emit(EVENT_FILE_DROPPED, dropFileId)
-    },
-    dropRowStyling(id, leaving, event) {
-      if (event.currentTarget.contains(event.relatedTarget)) {
-        return
-      }
-
-      const classList = document.getElementsByClassName(`oc-tbody-tr-${id}`)[0].classList
-      const className = "highlightedDropTarget"
-      leaving ? classList.remove(className) : classList.add(className)
-    },
-=======
     //my methods
     groupingOrder() {
       let groupingOrder = {}
@@ -558,7 +524,26 @@ export default {
     },
 
     ///
->>>>>>> Advanced table options
+    dragStart(file) {
+      if (!this.dragDrop) return
+      this.$emit(EVENT_FILE_DRAGGED, file)
+    },
+    dropRowEvent(event) {
+      if (!this.dragDrop) return
+      const dropTarget = event.target
+      const dropTargetTr = dropTarget.closest("tr")
+      const dropFileId = dropTargetTr.dataset.fileId
+      this.$emit(EVENT_FILE_DROPPED, dropFileId)
+    },
+    dropRowStyling(id, leaving, event) {
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        return
+      }
+
+      const classList = document.getElementsByClassName(`oc-tbody-tr-${id}`)[0].classList
+      const className = "highlightedDropTarget"
+      leaving ? classList.remove(className) : classList.add(className)
+    },
     isFieldTypeSlot(field) {
       return field.type === "slot"
     },
