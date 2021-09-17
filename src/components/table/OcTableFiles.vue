@@ -111,7 +111,6 @@
 
 <script>
 import { DateTime } from "luxon"
-
 import OcTable from "./OcTable.vue"
 import OcResource from "../resource/OcResource.vue"
 import OcIcon from "../OcIcon.vue"
@@ -121,7 +120,6 @@ import OcButton from "../OcButton.vue"
 import OcResourceSize from "../resource/OcResourceSize.vue"
 import OcDrop from "../OcDrop.vue"
 import { EVENT_TROW_MOUNTED, EVENT_FILE_DROPPED } from "./helpers/constants"
-
 export default {
   name: "OcTableFiles",
   status: "ready",
@@ -355,7 +353,6 @@ export default {
           },
         ].filter(field => Object.prototype.hasOwnProperty.call(firstResource, field.name))
       )
-
       if (this.hasActions) {
         fields.push({
           name: "actions",
@@ -365,22 +362,17 @@ export default {
           wrap: "nowrap",
         })
       }
-
       return fields
     },
-
     areAllResourcesSelected() {
       return this.selection.length === this.resources.length
     },
-
     selectedIds() {
       return this.selection.map(r => r.id)
     },
-
     allResourcesCheckboxLabel() {
       return this.$gettext("Select all resources")
     },
-
     contextMenuLabel() {
       return this.$gettext("Show context menu")
     },
@@ -406,16 +398,13 @@ export default {
       this.emitSelect([item])
       this.displayPositionedDropdown(instance, event)
     },
-
     showContextMenu(row, event, item) {
       event.preventDefault()
-
       const instance = row.$el.getElementsByClassName("oc-table-files-btn-action-dropdown")[0]
       if (instance === undefined) return
       this.emitSelect([item])
       this.displayPositionedDropdown(instance._tippy, event)
     },
-
     displayPositionedDropdown(dropdown, event) {
       dropdown.setProps({
         getReferenceClientRect: () => ({
@@ -429,7 +418,6 @@ export default {
       })
       dropdown.show()
     },
-
     rowMounted(resource, component) {
       /**
        * Triggered whenever a row is mounted
@@ -445,14 +433,12 @@ export default {
        */
       this.emitSelect([resource])
     },
-
     formatDate(date) {
       return DateTime.fromJSDate(new Date(date)).toRelative()
     },
     unixDate(date) {
       return DateTime.fromJSDate(new Date(date)).valueOf()
     },
-
     emitSelect(resources) {
       /**
        * Triggered when a checkbox for selecting a resource or the checkbox for selecting all resources is clicked
@@ -460,14 +446,12 @@ export default {
        */
       this.$emit("select", resources)
     },
-
     toggleSelectionAll() {
       if (this.areAllResourcesSelected) {
         return this.emitSelect([])
       }
       this.emitSelect(this.resources)
     },
-
     emitFileClick(resource) {
       /**
        * Triggered when a default action is triggered on a file
@@ -475,7 +459,6 @@ export default {
        */
       this.$emit("fileClick", resource)
     },
-
     isResourceClickable(resourceId) {
       if (!this.areResourcesClickable) {
         return false
@@ -484,14 +467,12 @@ export default {
         ? !this.disabled.includes(resourceId)
         : this.disabled !== resourceId
     },
-
     getResourceCheckboxLabel(resource) {
       if (resource.type === "folder") {
         return this.$gettext("Select folder")
       }
       return this.$gettext("Select file")
     },
-
     getSharedWithAvatarDescription(resource) {
       const resourceType =
         resource.type === "folder" ? this.$gettext("folder") : this.$gettext("file")
@@ -519,10 +500,8 @@ export default {
         shareCount,
         linkCount,
       })
-
       return translated
     },
-
     getOwnerAvatarDescription(resource) {
       const translated = this.$gettext("This %{ resourceType } is owned by %{ ownerName }")
       const resourceType =
@@ -531,7 +510,6 @@ export default {
         resourceType,
         ownerName: resource.owner[0].displayName,
       })
-
       return description
     },
   },
@@ -546,7 +524,6 @@ export default {
     top: 50%;
     transform: translateY(-50%);
   }
-
   &-actions {
     align-items: center;
     display: flex;
@@ -554,7 +531,6 @@ export default {
     gap: var(--oc-space-xsmall);
     justify-content: flex-end;
   }
-
   &-select-all {
     align-items: center;
     display: flex;
@@ -1015,7 +991,6 @@ export default {
               interval1.setDate(interval1.getDate()-7)
               let interval2 = new Date()
               interval2.setDate(interval2.getDate()-30)
-
               if (Date.parse(row.sdate)>interval1.getTime()){
                 return "Recent"
               } else if (Date.parse(row.sdate)>interval2.getTime()){
@@ -1192,7 +1167,6 @@ export default {
     },
   },
     methods: {
-
       shareStatus(status) {
         switch (status) {
           case 0:

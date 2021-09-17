@@ -31,8 +31,7 @@
           :id="opensInNewWindowDescriptionId"
           class="oc-invisible-sr"
           v-text="$gettext('Opens in a new window')"
-        >
-        </span>
+        />
         <oc-resource-name
           :key="resource.name"
           :name="resource.name"

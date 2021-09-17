@@ -241,7 +241,6 @@ import OcAvatar from "../avatars/OcAvatar.vue"
 import SortMixin from "./mixins/sort"
 import { getSizeClass } from "../../utils/sizeClasses"
 import OcSelect from "../OcSelect.vue"
-
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
@@ -250,7 +249,6 @@ import {
   EVENT_FILE_DROPPED,
   EVENT_FILE_DRAGGED,
 } from "./helpers/constants"
-
 /**
  * A table component with dynamic layout and data.
  */
@@ -421,18 +419,14 @@ export default {
     },
     tableClasses() {
       const result = ["oc-table"]
-
       if (this.hover) {
         result.push("oc-table-hover")
       }
-
       if (this.sticky) {
         result.push("oc-table-sticky")
       }
-
       return result
     },
-
     footerColspan() {
       return this.fields.length
     },
@@ -443,19 +437,15 @@ export default {
         this.tableData,
         this.groupingOrderAsc[this.selected]
       )
-
       if (this.groupingSettings && this.previewEnabled && this.groupingSettings.previewAmount) {
         let previewCount = this.groupingSettings.previewAmount + 1
-
         result.forEach(e => {
           let eLength = e.data.length
           if (eLength - previewCount >= 0) e.data = e.data.slice(0, previewCount - 1)
           previewCount = previewCount - eLength
         })
-
         result = result.filter(e => e.data.length > 0)
       }
-
       this.resultArray = result
       return result
     },
@@ -479,14 +469,12 @@ export default {
     createGroupedItems(col, data, asc) {
       let groups = {}
       let resultArray = []
-
       if (Object.keys(this.groupingSettings.groupingFunctions).includes(col)) {
         data.forEach(row => {
           groups[this.groupingSettings.groupingFunctions[col](row)]
             ? groups[this.groupingSettings.groupingFunctions[col](row)].push(row)
             : (groups[this.groupingSettings.groupingFunctions[col](row)] = [row])
         })
-
         for (const [key, value] of Object.entries(groups)) {
           resultArray.push({
             name: key.toUpperCase(),
@@ -494,7 +482,6 @@ export default {
             data: value,
           })
         }
-
         if (col === "creation")
           return resultArray.sort((a, b) =>
             Date.parse(a.data[0].sdate) > Date.parse(b.data[0].sdate) ? -1 : 1
@@ -503,7 +490,6 @@ export default {
         else return resultArray.sort((a, b) => (a.name > b.name ? -1 : 1))
       }
     },
-
     toggle(item, index) {
       this.resultArray[index].open = !this.resultArray[index].open
     },
@@ -512,7 +498,6 @@ export default {
     },
     clickedField(field) {
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
-
       if (this.groupingSettings && this.groupingAllowed) {
         this.groupingOrderAsc[field.name] = !this.groupingOrderAsc[field.name]
         if (field.name === "name")
@@ -522,7 +507,6 @@ export default {
     onSwitchAdvanced() {
       this.isAdvanced = !this.isAdvanced
     },
-
     ///
     dragStart(file) {
       if (!this.dragDrop) return
@@ -539,7 +523,6 @@ export default {
       if (event.currentTarget.contains(event.relatedTarget)) {
         return
       }
-
       const classList = document.getElementsByClassName(`oc-tbody-tr-${id}`)[0].classList
       const className = "highlightedDropTarget"
       leaving ? classList.remove(className) : classList.add(className)
@@ -570,17 +553,13 @@ export default {
       if (this.sticky) {
         props.style = `top: ${this.headerPosition}px;`
       }
-
       if (index === 0) {
         props.class += ` oc-pl-${getSizeClass(this.paddingX)} `
       }
-
       if (index === this.fields.length - 1) {
         props.class += ` oc-pr-${getSizeClass(this.paddingX)}`
       }
-
       this.extractSortThProps(props, field, index)
-
       return props
     },
     extractTbodyTrProps(item, index) {
@@ -602,15 +581,12 @@ export default {
       if (Object.prototype.hasOwnProperty.call(field, "wrap")) {
         props.wrap = field.wrap
       }
-
       if (index === 0) {
         props.class += ` oc-pl-${getSizeClass(this.paddingX)} `
       }
-
       if (index === this.fields.length - 1) {
         props.class += ` oc-pr-${getSizeClass(this.paddingX)}`
       }
-
       return props
     },
     extractCellProps(field) {
@@ -624,50 +600,38 @@ export default {
       if (Object.prototype.hasOwnProperty.call(field, "width")) {
         result.width = field.width
       }
-
       return result
     },
     isHighlighted(item) {
       if (!this.highlighted) {
         return false
       }
-
       if (Array.isArray(this.highlighted)) {
         return this.highlighted.indexOf(item[this.idKey]) > -1
       }
-
       return this.highlighted === item[this.idKey]
     },
-
     isDisabled(item) {
       if (!this.disabled) {
         return false
       }
-
       if (Array.isArray(this.disabled)) {
         return this.disabled.indexOf(item[this.idKey]) > -1
       }
-
       return this.disabled === item[this.idKey]
     },
-
     cellKey(field, index, item) {
       const prefix = [item[this.idKey], index + 1].filter(Boolean)
-
       if (this.isFieldTypeSlot(field)) {
         return [...prefix, field.name].join("-")
       }
-
       if (this.isFieldTypeCallback(field)) {
         return [...prefix, field.callback(item[field.name])].join("-")
       }
-
       return [...prefix, item[field.name]].join("-")
     },
-
     getSortLabel(name) {
       const label = this.$gettext("Sort by %{ name }")
-
       return this.$gettextInterpolate(label, { name })
     },
   },
@@ -697,54 +661,42 @@ export default {
   border-spacing: 0;
   color: var(--oc-color-text-default);
   width: 100%;
-
   &-hover tr {
     transition: background-color $transition-duration-short ease-in-out;
   }
-
   tr:not(&-header-row) {
     height: var(--oc-size-height-table-row);
   }
-
   tr + tr {
     border-top: 1px solid var(--oc-color-border);
   }
-
   &-hover tr:hover {
     background-color: var(--oc-color-input-border);
   }
-
   &-highlighted {
     background-color: var(--oc-color-background-highlight);
   }
-
   &-disabled {
     background-color: var(--oc-color-background-muted);
     opacity: 0.8;
     pointer-events: none;
   }
-
   &-sticky {
     position: relative;
-
     .oc-table-header-cell {
       background-color: var(--oc-color-background-default);
       position: sticky;
       z-index: 1;
     }
   }
-
   .highlightedDropTarget {
     background-color: var(--oc-color-input-border);
   }
-
   &-thead-content {
     vertical-align: middle;
   }
-
   &-footer {
     border-top: 1px solid var(--oc-color-border);
-
     &-cell {
       color: var(--oc-color-text-muted);
       font-size: 0.875rem;
@@ -994,3 +946,4 @@ export default {
 </script>
 ```
 </docs>
+

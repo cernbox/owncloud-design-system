@@ -2,7 +2,8 @@
   <oc-avatar-item
     :width="width"
     :icon-size="iconSize"
-    icon="link"
+    icon="user_remote"
+    icon-color="#D78841"
     :name="name"
     :accessible-label="accessibleLabel"
   />
@@ -11,14 +12,14 @@
 <script>
 import OcAvatarItem from "./OcAvatarItem"
 export default {
-  name: "OcAvatarLink",
-  status: "ready",
-  release: "2.1.0",
+  name: "OcAvatarGuest",
+  status: "review",
+  release: "",
   components: { OcAvatarItem },
 
   props: {
     /**
-     * Name of the public link used as an accessible label
+     * Name of the guest used as an accessible label
      */
     name: {
       type: String,
@@ -57,6 +58,6 @@ export default {
 
 <docs>
 ```js
-<oc-avatar-link name="Public link" accessible-label="Public link" />
+<oc-avatar-guest name="Guest" accessible-label="Guest" />
 ```
 </docs>
