@@ -602,6 +602,11 @@ export default {
     justify-content: center;
   }
 }
+
+.tippy-box,
+div[data-tippy-root] {
+  box-shadow: 0 5px 15px rgb(0 0 0 / 8%);
+}
 </style>
 
 <docs>
