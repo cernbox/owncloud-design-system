@@ -588,6 +588,11 @@ export default {
     justify-content: center;
   }
 }
+
+.tippy-box,
+div[data-tippy-root] {
+  box-shadow: rgb(0 0 0 / 20%) 0px 10px 16px 0px, rgb(0 0 0 / 19%) 0px 6px 20px 0px;
+}
 </style>
 
 <docs>
