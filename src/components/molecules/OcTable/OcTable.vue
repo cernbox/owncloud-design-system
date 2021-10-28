@@ -453,6 +453,12 @@ export default {
         : false
     },
   },
+  mounted(){
+    if (localStorage.getItem(`sortBy:${window.location.href.split('?')[0]}`)){
+      let field = JSON.parse(localStorage.getItem(`sortBy:${window.location.href.split('?')[0]}`))
+       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
+    }
+  },
   methods: {
     groupingOrder() {
       let groupingOrder = {}
@@ -497,7 +503,10 @@ export default {
       return this.resultArray[index].open
     },
     clickedField(field) {
+
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
+      if (field.name!=="name") localStorage.setItem(`sortBy:${window.location.href.split('?')[0]}`, JSON.stringify(field));
+
       if (this.groupingSettings && this.groupingAllowed) {
         let group =
           Object.keys(this.groupingSettings.functionColMappings).find(
