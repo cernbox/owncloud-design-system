@@ -263,6 +263,14 @@ export default {
   mixins: [SortMixin],
   props: {
     /**
+     * Web view in which the table is shown. Used to save sorting settings 
+     * -**
+     */
+    view: {
+      type: String,
+      required: false,
+    },
+    /**
      * Grouping settings for the table. Following settings are possible:<br />
      * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.<br />
      * -**groupingBy**: must be either one of the keys in groupingFunctions or 'None'. If not set, default grouping will be 'None'.<br />
@@ -474,6 +482,14 @@ export default {
         : false
     },
   },
+  mounted(){
+    let view = this.view || window.location.href.split('?')[0]
+    if (localStorage.getItem(`sortBy:${view}`)){
+      let field = JSON.parse(localStorage.getItem(`sortBy:${view}`))
+       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)   
+    }
+  },
+  
   methods: {
     dragOver(event) {
       event.preventDefault()

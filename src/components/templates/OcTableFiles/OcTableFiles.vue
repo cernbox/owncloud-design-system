@@ -1,6 +1,7 @@
 <template>
   <oc-table
     :grouping-settings="groupingSettings"
+    :view="view"
     :data="resources"
     :fields="fields"
     :highlighted="selectedIds"
@@ -146,6 +147,14 @@ export default {
     event: "select",
   },
   props: {
+        /**
+     * Web view in which the table is shown. Used to save sorting settings
+     * -**
+     */
+    view: {
+      type: String,
+      required: false,
+    },
     /**
      * Grouping settings for the table. Following settings are possible:<br />
      * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.
