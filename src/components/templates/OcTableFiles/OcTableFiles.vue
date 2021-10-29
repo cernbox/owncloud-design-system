@@ -377,6 +377,7 @@ export default {
             wrap: "nowrap",
             callback: date => this.formatDate(date),
             sortable: date => this.unixDate(date),
+            tip: date => this.stringDate(date),
           },
           {
             name: "sdate",
@@ -386,6 +387,7 @@ export default {
             wrap: "nowrap",
             callback: date => this.formatDate(date),
             sortable: date => this.unixDate(date),
+            tip: date => this.stringDate(date),
           },
           {
             name: "ddate",
@@ -395,6 +397,7 @@ export default {
             wrap: "nowrap",
             callback: date => this.formatDate(date),
             sortable: date => this.unixDate(date),
+            tip: date => this.stringDate(date),
           },
         ].filter(field => Object.prototype.hasOwnProperty.call(firstResource, field.name))
       )
@@ -491,6 +494,9 @@ export default {
        * @property {object} resource The resource for which the event is triggered
        */
       this.emitSelect([resource])
+    },
+    stringDate(date) {
+      return DateTime.fromJSDate(new Date(date)).toLocaleString(DateTime.DATETIME_FULL)
     },
     formatDate(date) {
       return DateTime.fromJSDate(new Date(date)).toRelative()
