@@ -185,6 +185,7 @@
           style="
              {
               height: rowHeight + 'px';
+              font-weight: 600;
             }
           "
           :class="['oc-tbody-tr', 'preview-settings']"
@@ -199,7 +200,10 @@
                 text-align: center;
               }
             "
-            ><div class="preview-heading">Show more</div> </oc-td
+            ><div class="preview-heading"><span>Show more</span> <oc-icon
+                name="expand_more"           
+                size="large"
+              /> </div> </oc-td
           ><oc-td
             v-else
             key="showLess"
@@ -209,7 +213,10 @@
                 text-align: center;
               }
             "
-            ><div class="preview-heading">Show less</div>
+            ><div class="preview-heading"><span>Show less </span><oc-icon
+                name="expand_less"                             
+                size="large"
+              /> </div>
           </oc-td>
         </oc-tr>
       </tbody>
