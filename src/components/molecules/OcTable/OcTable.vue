@@ -514,8 +514,9 @@ export default {
   mounted(){
     let view = this.view || window.location.href.split('?')[0]
     if (localStorage.getItem(`sortBy:${view}`)){
-      let field = JSON.parse(localStorage.getItem(`sortBy:${view}`))
-       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)   
+      let sortBy = JSON.parse(localStorage.getItem(`sortBy:${view}`))
+       this.$emit(this.constants.EVENT_THEAD_CLICKED, sortBy.field)
+       if (!sortBy.asc) this.$emit(this.constants.EVENT_THEAD_CLICKED, sortBy.field)
     }
   },
   

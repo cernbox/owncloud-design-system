@@ -386,7 +386,7 @@ export default {
             alignH: "right",
             wrap: "nowrap",
             callback: date => this.relativeDate(date),
-            sortable: date => this.unixDate(date),
+            sortable: true,//date => this.unixDate(date),
             tip: date => this.stringDate(date),
           },
           {
@@ -396,7 +396,7 @@ export default {
             alignH: "right",
             wrap: "nowrap",
             callback: date => this.relativeDate(date),
-            sortable: date => this.unixDate(date),
+            sortable: true,//date => this.unixDate(date),
             tip: date => this.stringDate(date),
           },
           {
@@ -406,8 +406,9 @@ export default {
             alignH: "right",
             wrap: "nowrap",
             callback: date => this.relativeDate(date),
-            sortable: date => this.unixDate(date),
+            sortable: true, //date => this.unixDate(date),
             tip: date => this.stringDate(date),
+
           },
         ].filter(field => Object.prototype.hasOwnProperty.call(firstResource, field.name))
       )
