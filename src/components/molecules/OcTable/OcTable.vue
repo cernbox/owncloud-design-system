@@ -290,6 +290,14 @@ export default {
   mixins: [SortMixin],
   props: {
     /**
+     * Web view in which the table is shown. Used to save sorting settings 
+     * -**
+     */
+    view: {
+      type: String,
+      required: false,
+    },
+    /**
      * Grouping settings for the table. Following settings are possible:<br />
      * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.<br />
      * -**groupingBy**: must be either one of the keys in groupingFunctions or 'None'. If not set, default grouping will be 'None'.<br />
@@ -482,6 +490,18 @@ export default {
         : false
     },
   },
+  mounted(){
+    let view = this.view || window.location.href.split('?')[0]
+    if (localStorage.getItem(`sortBy:${view}`)){
+
+      let sortBy = JSON.parse(localStorage.getItem(`sortBy:${view}`))
+       if (sortBy.field.name!=="name") this.$emit(this.constants.EVENT_THEAD_CLICKED, sortBy.field)
+       if (!sortBy.asc) this.$emit(this.constants.EVENT_THEAD_CLICKED, sortBy.field)
+    } else {
+      localStorage.setItem(`sortBy:${view}`, JSON.stringify({field: this.fields[1], asc: true}));
+    }
+  },
+  
   methods: {
     groupingOrder() {
       let groupingOrder = {}
@@ -526,7 +546,20 @@ export default {
       return this.resultArray[index].open
     },
     clickedField(field) {
+
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
+      let view = this.view || window.location.href.split('?')[0]
+      
+      let orderBy = JSON.parse(localStorage.getItem(`sortBy:${view}`))
+      //case: setup exists, same field clicked
+      if (orderBy && field.title === orderBy.field.title){
+        orderBy.asc = !orderBy.asc
+        localStorage.setItem(`sortBy:${view}`, JSON.stringify(orderBy));
+      } 
+      //case: setup exists, different field clicked
+      else if (orderBy && field.title != orderBy.field.title){
+        localStorage.setItem(`sortBy:${view}`, JSON.stringify({field: field, asc: orderBy.asc}));
+      }
       if (this.groupingSettings && this.groupingAllowed) {
         let group =
           Object.keys(this.groupingSettings.functionColMappings).find(
