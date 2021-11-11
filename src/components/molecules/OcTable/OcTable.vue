@@ -713,6 +713,13 @@ export default {
       )
       return groupingOrder
     },
+     groupingOrder() {
+      let groupingOrder = {}
+      Object.keys(this.groupingSettings.groupingFunctions).forEach(
+        group => (groupingOrder[group] = true)
+      )
+      return groupingOrder
+    },
     createGroupedItems(col, data, asc) {
       let groups = {}
       let resultArray = []
@@ -729,10 +736,8 @@ export default {
             data: value,
           })
         }
-
         if (col === "sdate" || this.groupingSettings.functionColMappings[col] === "sdate") {
           //resultArray = resultArray.reverse()
-
           let sorted = resultArray.sort((a, b) => {
             return asc ? b.data[0].sdate - a.data[0].sdate : a.data[0].sdate - b.data[0].sdate
           })
@@ -750,6 +755,18 @@ export default {
     },
     clickedField(field) {
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
+      let view = this.view || window.location.href.split('?')[0]
+      
+      let orderBy = JSON.parse(localStorage.getItem(`sortBy:${view}`))
+      //case: setup exists, same field clicked
+      if (orderBy && field.title === orderBy.field.title){
+        orderBy.asc = !orderBy.asc
+        localStorage.setItem(`sortBy:${view}`, JSON.stringify(orderBy));
+      } 
+      //case: setup exists, different field clicked
+      else if (orderBy && field.title != orderBy.field.title){
+        localStorage.setItem(`sortBy:${view}`, JSON.stringify({field: field, asc: orderBy.asc}));
+      }
       if (this.groupingSettings && this.groupingAllowed) {
         let group =
           Object.keys(this.groupingSettings.functionColMappings).find(
