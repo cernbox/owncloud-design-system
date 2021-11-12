@@ -2,8 +2,7 @@
   <oc-table
     :grouping-settings="groupingSettings"
     :view="view"
-    :data="getCleanedResources(resources)"
-    idKey="cleanId"
+    :data="resources"
     :fields="fields"
     :highlighted="selectedIds"
     :disabled="disabled"
@@ -649,8 +648,8 @@ div[data-tippy-root] {
 ```js
 <template>
   <div>
-    <oc-table-files :resources="resources" disabled="notes" v-model="selected" class="oc-mb"
-                    @action="handleAction" @fileDropped="fileDropped" :drag-drop="true" :resource-dom-selector="resourceDomSelector">
+    <oc-table-files :view="'view'" :resources="resources" disabled="notes" v-model="selected" class="oc-mb"
+                    @action="handleAction" @fileDropped="fileDropped" :drag-drop="true">
       <template v-slot:quickActions="props">
         <oc-button @click.stop variation="passive" appearance="raw" aria-label="Share with other people">
           <oc-icon name="group-add" />
@@ -980,6 +979,7 @@ div[data-tippy-root] {
   }
 </script>
 ```
+
 
 ## Trashbin files table
 ```js
