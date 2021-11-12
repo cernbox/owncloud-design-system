@@ -2,7 +2,7 @@
   <div>
     <div
       v-if="groupingSettings && groupingAllowed && groupingSettings.showGroupingOptions"
-      style="padding-bottom: 20px"
+      class="oc-pb-m"
     >
       <div class="oc-docs-width-small" style="display: inline">
         <label class="oc-mx-s">Group By:</label>
@@ -97,7 +97,7 @@
 
       <!-- Collapsibles -->
 
-      <tbody
+      <oc-tbody
         v-for="(item, index) in groupedItems"
         v-else-if="groupingAllowed && selected !== 'None'"
         :key="`${item.name + index}`"
@@ -193,7 +193,7 @@
             </oc-td>
           </oc-tr>
         </template>
-      </tbody>
+      </oc-tbody>
 
       <!-- Show more/show less footer for preview enabled -->
       <tbody
