@@ -270,6 +270,14 @@ export default {
   mixins: [SortMixin],
   props: {
     /**
+     * Web view in which the table is shown. Used to save sorting settings 
+     * -**
+     */
+    view: {
+      type: String,
+      required: false,
+    },
+    /**
      * Grouping settings for the table. Following settings are possible:<br />
      * -**groupingFunctions**: Object with keys as grouping options names and functions that get a table data row and return a group name for that row. The names of the functions are used as grouping options.<br />
      * -**groupingBy**: must be either one of the keys in groupingFunctions or 'None'. If not set, default grouping will be 'None'.<br />
@@ -480,6 +488,35 @@ export default {
         ? true
         : false
     },
+  },
+  mounted(){
+
+    if (this.view) {
+      const sortBy = localStorage.getItem(`sortBy:${this.view}`)
+      if (sortBy) {
+        const sortByObj = JSON.parse(sortBy)
+
+        if (sortByObj.name === this.fields[1].name) {
+          // This is the default sort (the first element in the array is a placeholder)
+          if (sortByObj.desc) {
+            // But we still need to call once for descending...
+            this.$emit(this.constants.EVENT_THEAD_CLICKED, this.fields[1])
+          }
+
+        } else {
+          const field = this.fields.find(field => field.name === sortByObj.name)
+          // If the field no longer exists, ignore
+          // FIXME check what will happen when we can show/hide columns
+          if (field) {
+            this.$emit(this.constants.EVENT_THEAD_CLICKED, field, sortByObj.desc)
+          }
+        }
+      } else {
+        localStorage.setItem(`sortBy:${this.view}`, JSON.stringify({name: this.fields[1].name, desc: false}));
+      }
+    } else {
+      console.warn('Property view not set for table, ignoring persistent sorting')
+    }
   },
   
   methods: {
@@ -711,7 +748,16 @@ export default {
       return this.resultArray[index].open
     },
     clickedField(field) {
+
+      // Default logic
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
+
+      // Persistent sorting logic
+      if (this.view) {
+        localStorage.setItem(`sortBy:${this.view}`, JSON.stringify({name: this.sortBy, desc: this.isDesc}));
+      }
+
+      // Groupping logic
       if (this.groupingSettings && this.groupingAllowed) {
         let group =
           Object.keys(this.groupingSettings.functionColMappings).find(

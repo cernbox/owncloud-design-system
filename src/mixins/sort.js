@@ -44,6 +44,9 @@ export default {
       }
       return null
     },
+    isDesc() {
+      return this.sortDir === SORT_DIRECTION_DESC
+    }
   },
   methods: {
     sortData(a, b) {
@@ -79,7 +82,7 @@ export default {
     fieldIsSortable({ sortable }) {
       return !!sortable
     },
-    handleSort(field) {
+    handleSort(field, desc = false) {
       if (!this.fieldIsSortable(field)) {
         return
       }
@@ -88,6 +91,10 @@ export default {
         this.sortDir =
           this.sortDir === SORT_DIRECTION_ASC ? SORT_DIRECTION_DESC : SORT_DIRECTION_ASC
         return
+      }
+
+      if (desc) {
+        this.sortDir = SORT_DIRECTION_DESC
       }
 
       this.sortBy = field.name
