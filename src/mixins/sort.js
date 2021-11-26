@@ -51,7 +51,7 @@ export default {
     fieldIsSortable({ sortable }) {
       return !!sortable
     },
-    handleSort(field) {
+    handleSort(field, desc = false) {
       if (!this.fieldIsSortable(field)) {
         return
       }
