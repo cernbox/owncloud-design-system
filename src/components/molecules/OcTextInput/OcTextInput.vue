@@ -18,7 +18,10 @@
         v-on="listeners"
         @change="onChange($event.target.value)"
         @input="onInput($event.target.value)"
-        @focus="onFocus($event.target)"
+        @focus="onFocus($event)"
+        @click="onClick($event.target)"
+        @keydown.control.65.prevent="onFocus($event)"
+        @keydown.control.97.prevent="onFocus($event)"
       />
       <oc-button
         v-if="showClearButton"
@@ -176,6 +179,13 @@ export default {
     },
   },
   computed: {
+    extension() {
+      if (this.type.match(/(text)/) && this.value.includes(".")) {
+        let partStrings = this.value.split(".")
+        return "." + partStrings[partStrings.length - 1]
+      }
+      return false
+    },
     showMessageLine() {
       return (
         this.fixMessageLine ||
@@ -258,14 +268,28 @@ export default {
        * Input event
        * @type {event}
        **/
+
       this.$emit("input", value)
     },
-    onFocus(target) {
-      target.select()
+    onFocus(e) {
+      e.preventDefault()
+      e.target.select()
       /**
        * Focus event - emitted as soon as the input field is focused
        * @type {event}
        **/
+
+      if (this.extension)
+        e.target.setSelectionRange(0, e.target.value.length - this.extension.length)
+      this.$emit("focus", e.target.value)
+    },
+
+    onClick(target) {
+      if (this.extension)
+        target.setSelectionRange(
+          target.value.length - this.extension.length,
+          target.value.length - this.extension.length
+        )
       this.$emit("focus", target.value)
     },
   },
