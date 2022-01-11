@@ -51,7 +51,7 @@
       </oc-thead>
       <oc-tbody v-if="selected === 'None' || !selected">
         <oc-tr
-          v-for="(item, trIndex) in data"
+          v-for="(item, trIndex) in tableData"
           :key="`oc-tbody-tr-${itemDomSelector(item) || trIndex}`"
           :ref="`row-${trIndex}`"
           v-bind="extractTbodyTrProps(item, trIndex)"
@@ -268,7 +268,7 @@ export default {
   mixins: [SortMixin],
   props: {
     /**
-     * Web view in which the table is shown. Used to save sorting settings 
+     * Web view in which the table is shown. Used to save sorting settings
      * -**
      */
     view: {
@@ -485,11 +485,7 @@ export default {
         : false
     },
   },
-<<<<<<< HEAD
-
-=======
-  mounted(){
-
+  mounted() {
     if (this.view) {
       const sortBy = localStorage.getItem(`sortBy:${this.view}`)
       if (sortBy) {
@@ -501,7 +497,6 @@ export default {
             // But we still need to call once for descending...
             this.$emit(this.constants.EVENT_THEAD_CLICKED, this.fields[1])
           }
-
         } else {
           const field = this.fields.find(field => field.name === sortByObj.name)
           // If the field no longer exists, ignore
@@ -511,14 +506,16 @@ export default {
           }
         }
       } else {
-        localStorage.setItem(`sortBy:${this.view}`, JSON.stringify({name: this.fields[1].name, desc: false}));
+        localStorage.setItem(
+          `sortBy:${this.view}`,
+          JSON.stringify({ name: this.fields[1].name, desc: false })
+        )
       }
     } else {
-      console.warn('Property view not set for table, ignoring persistent sorting')
+      console.warn("Property view not set for table, ignoring persistent sorting")
     }
   },
-  
->>>>>>> Persistent sort by
+
   methods: {
     dragOver(event) {
       event.preventDefault()
@@ -752,13 +749,15 @@ export default {
       return this.resultArray[index].open
     },
     clickedField(field) {
-
       // Default logic
       this.$emit(this.constants.EVENT_THEAD_CLICKED, field)
 
       // Persistent sorting logic
       if (this.view) {
-        localStorage.setItem(`sortBy:${this.view}`, JSON.stringify({name: this.sortBy, desc: this.isDesc}));
+        localStorage.setItem(
+          `sortBy:${this.view}`,
+          JSON.stringify({ name: this.sortBy, desc: this.isDesc })
+        )
       }
 
       // Groupping logic
