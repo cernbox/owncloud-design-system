@@ -20,7 +20,6 @@
         @input="onInput($event.target.value)"
         @focus="onFocus($event)"
         @click="onClick($event.target)"
-        @keydown.control.65.prevent="onFocus($event)"
         @keydown.control.97.prevent="onFocus($event)"
       />
       <oc-button
