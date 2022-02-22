@@ -214,7 +214,6 @@ export default {
     > li a:hover,
     > li span:not([aria-current="page"]):not(.oc-icon):hover,
     > li button:hover {
-      text-decoration: underline;
     }
   }
 
