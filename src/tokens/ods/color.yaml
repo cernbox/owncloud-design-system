@@ -111,8 +111,12 @@ color:
       value: rgb(44, 101, 255)
     archive:
       value: rgb(255, 207, 1)
+    drawio:
+      value: rgb(255, 111, 0)
     file:
       value: "{color.text.default.value}"
+    ifc:
+      value: rgb(208, 67, 236)
     image:
       value: rgb(255, 111, 0)
     code:
