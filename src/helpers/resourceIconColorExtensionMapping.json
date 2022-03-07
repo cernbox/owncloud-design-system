@@ -49,6 +49,7 @@
   "mp3": "var(--oc-color-icon-audio)",
   "mp4": "var(--oc-color-icon-video)",
   "odp": "var(--oc-color-icon-presentation)",
+  "odg": "var(--oc-color-icon-graphic)",
   "ods": "var(--oc-color-icon-spreadsheet)",
   "odt": "var(--oc-color-icon-document)",
   "one": "var(--oc-color-icon-document)",

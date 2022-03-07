@@ -111,6 +111,8 @@ color:
       value: rgb(44, 101, 255)
     archive:
       value: rgb(255, 207, 1)
+    graphic:
+      value: rgb(235, 201, 74)
     drawio:
       value: rgb(255, 111, 0)
     file:
@@ -135,4 +137,3 @@ color:
       value: rgb(255, 64, 6)
     pdf:
       value: rgb(225, 5, 14)
-    
