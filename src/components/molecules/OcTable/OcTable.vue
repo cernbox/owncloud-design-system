@@ -472,7 +472,7 @@ export default {
     transition: background-color $transition-duration-short ease-in-out;
   }
 
-  &-hover tr:hover span {
+  &-hover tr:hover td:not(:last-child) {
     color: var(--oc-color-swatch-brand-hover) !important;
   }
 
