@@ -1,3 +1,5 @@
+[!] We switched to upstream ODS (until a need to fork arises), so the repo has been archived.
+
 # ownCloud Design System
 [![Build Status](https://drone.owncloud.com/api/badges/owncloud/owncloud-design-system/status.svg)](https://drone.owncloud.com/owncloud/owncloud-design-system)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=owncloud_owncloud-design-system&metric=coverage)](https://sonarcloud.io/dashboard?id=owncloud_owncloud-design-system)
